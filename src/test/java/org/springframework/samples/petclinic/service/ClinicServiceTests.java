@@ -18,6 +18,9 @@ package org.springframework.samples.petclinic.service;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +41,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 /**
  * Integration test of the Service and the Repository layer.
  * <p>
@@ -191,6 +198,8 @@ public class ClinicServiceTests {
         assertThat(pet7.getName()).isEqualTo(newName);
     }
 
+
+
     @Test
     public void shouldFindVets() {
         Collection<Vet> vets = this.vets.findAll();
@@ -226,5 +235,6 @@ public class ClinicServiceTests {
         assertThat(visitArr[0].getDate()).isNotNull();
         assertThat(visitArr[0].getPetId()).isEqualTo(7);
     }
+
 
 }

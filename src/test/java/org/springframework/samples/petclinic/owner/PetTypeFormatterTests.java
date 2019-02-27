@@ -14,7 +14,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
-
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 /**
  * Test class for {@link PetTypeFormatter}
  *
@@ -35,8 +38,9 @@ public class PetTypeFormatterTests {
 
     @Test
     public void testPrint() {
-        PetType petType = new PetType();
-        petType.setName("Hamster");
+        PetType petType = mock(PetType.class);
+        when(petType.getName()).thenReturn("Hamster");
+
         String petTypeName = this.petTypeFormatter.print(petType, Locale.ENGLISH);
         assertEquals("Hamster", petTypeName);
     }
