@@ -21,6 +21,10 @@ import org.springframework.util.SerializationUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static org.mockito.Mockito.*;
+
+
+
 /**
  * @author Dave Syer
  *
@@ -29,15 +33,22 @@ public class VetTests {
 
     @Test
     public void testSerialization() {
-        Vet vet = new Vet();
-        vet.setFirstName("Zaphod");
-        vet.setLastName("Beeblebrox");
-        vet.setId(123);
+        Vet mockVet = mock(Vet.class, withSettings().serializable()); 
+        
+        when(mockVet.getFirstName()).thenReturn("Zaphod");
+        when(mockVet.getLastName()).thenReturn("Beeblebrox");
+        when(mockVet.getId()).thenReturn(123);
+        
+        mockVet.setFirstName("Zaphod"); 
+        mockVet.setLastName("Beeblebrox");
+        mockVet.setId(123);
+        
         Vet other = (Vet) SerializationUtils
-                .deserialize(SerializationUtils.serialize(vet));
-        assertThat(other.getFirstName()).isEqualTo(vet.getFirstName());
-        assertThat(other.getLastName()).isEqualTo(vet.getLastName());
-        assertThat(other.getId()).isEqualTo(vet.getId());
+                .deserialize(SerializationUtils.serialize(mockVet));
+        
+        assertThat(other.getFirstName()).isEqualTo(mockVet.getFirstName());
+        assertThat(other.getLastName()).isEqualTo(mockVet.getLastName());
+        assertThat(other.getId()).isEqualTo(mockVet.getId());
     }
 
 }
