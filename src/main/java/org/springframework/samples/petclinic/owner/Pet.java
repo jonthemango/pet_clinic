@@ -105,10 +105,13 @@ public class Pet extends NamedEntity {
                 new MutableSortDefinition("date", false, false));
         return Collections.unmodifiableList(sortedVisits);
     }
-
-    public void addVisit(Visit visit) {
+    public void addVisit(Visit visit,int id){
         getVisitsInternal().add(visit);
-        visit.setPetId(this.getId());
+        visit.setPetId(id);
+    }
+    public void addVisit(Visit visit) {
+       addVisit(visit,this.getId());
+        
     }
 
 }
