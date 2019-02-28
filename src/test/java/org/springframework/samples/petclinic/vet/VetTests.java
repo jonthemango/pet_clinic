@@ -16,7 +16,7 @@
 package org.springframework.samples.petclinic.vet;
 
 import org.junit.Test;
-
+import org.mockito.ArgumentCaptor;
 import org.springframework.util.SerializationUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,12 +58,19 @@ public class VetTests {
         Specialty radiology = mock(Specialty.class);
         Specialty doctor = mock(Specialty.class);
 
+        radiology.setName("Radiology");
+        doctor.setName("Doctor");
+        
+        
+        
+        //add the specialties to the vet
         vet.addSpecialty(doctor);
         vet.addSpecialty(radiology);
-
        
-//        assertThat(vet.getSpecialties().get(0)).isEqualTo(radiology);
-        assertThat(vet.getSpecialties().get(1)).isEqualTo(doctor);
+      
+        // verify that the specialties are added in the vet 
+        assertThat((vet.getSpecialties().get(0)).getName()).isEqualTo(doctor.getName());
+        assertThat((vet.getSpecialties().get(1)).getName()).isEqualTo(radiology.getName());
 
     }
 
