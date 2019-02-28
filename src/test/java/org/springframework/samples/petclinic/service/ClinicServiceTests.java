@@ -91,7 +91,7 @@ public class ClinicServiceTests {
 
     @Autowired
     protected VetRepository vets;
-/*
+
     @Test
     public void shouldFindOwnersByLastName() {
         Collection<Owner> owners = this.owners.findByLastName("Davis");
@@ -211,7 +211,7 @@ public class ClinicServiceTests {
         assertThat(vet.getSpecialties().get(0).getName()).isEqualTo("dentistry");
         assertThat(vet.getSpecialties().get(1).getName()).isEqualTo("surgery");
     }
-*/
+
     @Test
     @Transactional
     public void shouldAddNewVisitForPet() {
@@ -233,7 +233,7 @@ public class ClinicServiceTests {
         
     }
 
-   // @Test
+    @Test
     public void shouldFindVisitsByPetId() throws Exception {
         Collection<Visit> visits = this.visits.findByPetId(7);
         assertThat(visits.size()).isEqualTo(2);
