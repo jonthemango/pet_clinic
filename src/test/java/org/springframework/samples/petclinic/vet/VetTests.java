@@ -61,8 +61,9 @@ public class VetTests {
         vet.addSpecialty(doctor);
         vet.addSpecialty(radiology);
 
-        assertThat(vet.getSpecialties().get(0)).isEqualTo(doctor);
-        assertThat(vet.getSpecialties().get(1)).isEqualTo(radiology);
+       
+        assertThat(vet.getSpecialties().get(0)).isEqualTo(radiology);
+        assertThat(vet.getSpecialties().get(1)).isEqualTo(doctor);
 
     }
 
