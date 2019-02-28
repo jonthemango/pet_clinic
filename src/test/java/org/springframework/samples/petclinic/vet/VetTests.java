@@ -22,8 +22,8 @@ import org.springframework.util.SerializationUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.mockito.Mockito.*;
-
-
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * @author Dave Syer
@@ -33,22 +33,37 @@ public class VetTests {
 
     @Test
     public void testSerialization() {
-        Vet mockVet = mock(Vet.class, withSettings().serializable()); 
-        
+        Vet mockVet = mock(Vet.class, withSettings().serializable());
+
         when(mockVet.getFirstName()).thenReturn("Zaphod");
         when(mockVet.getLastName()).thenReturn("Beeblebrox");
         when(mockVet.getId()).thenReturn(123);
-        
-        mockVet.setFirstName("Zaphod"); 
+
+        mockVet.setFirstName("Zaphod");
         mockVet.setLastName("Beeblebrox");
         mockVet.setId(123);
-        
-        Vet other = (Vet) SerializationUtils
-                .deserialize(SerializationUtils.serialize(mockVet));
-        
+
+        Vet other = (Vet) SerializationUtils.deserialize(SerializationUtils.serialize(mockVet));
+
         assertThat(other.getFirstName()).isEqualTo(mockVet.getFirstName());
         assertThat(other.getLastName()).isEqualTo(mockVet.getLastName());
         assertThat(other.getId()).isEqualTo(mockVet.getId());
+    }
+
+    @Test
+    public void testAddSpecialty() {
+
+        Vet vet = new Vet();
+
+        Specialty radiology = mock(Specialty.class);
+        Specialty doctor = mock(Specialty.class);
+
+        vet.addSpecialty(doctor);
+        vet.addSpecialty(radiology);
+
+        assertThat(vet.getSpecialties().get(0)).isEqualTo(doctor);
+        assertThat(vet.getSpecialties().get(1)).isEqualTo(radiology);
+
     }
 
 }
