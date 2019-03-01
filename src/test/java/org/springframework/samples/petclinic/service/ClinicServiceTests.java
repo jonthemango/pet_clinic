@@ -128,6 +128,39 @@ public class ClinicServiceTests {
         owners = this.owners.findByLastName("Schultz");
         assertThat(owners.size()).isEqualTo(found + 1);
     }
+	
+	@Test
+    @Transactional
+    //Test that adds a dummy Pet to an actual Owner using untested addPet() method
+    public void testAddingPetToOwner() {
+        //Creating real object
+    	Owner owner = new Owner();
+        owner.setFirstName("Yanis");
+        owner.setLastName("Konoha");
+        owner.setAddress("33, Skander Street");
+        owner.setCity("St-Jerome");
+        owner.setTelephone("4444444444");
+        
+        int nbrPets = owner.getPets().size();
+        
+        //Mocking Pet object to test addPet()
+        Pet petMock = mock(Pet.class);
+        
+        //Stubbing it
+        when(petMock.getName()).thenReturn("Beethoven");
+        when(petMock.getOwner()).thenReturn(owner);
+        when(petMock.getId()).thenReturn(10);
+        when(petMock.isNew()).thenReturn(true);
+        
+        //Adding it
+        owner.addPet(petMock);
+        
+        //Asserting that Pet was added
+        assertThat(owner.getPets().size()).isEqualTo(nbrPets + 1);
+        
+        System.out.println(owner.getPet("Beethoven"));
+        assertThat(owner.getPet("Beethoven")).isNotNull();
+    }
 
     @Test
     @Transactional
