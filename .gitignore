@@ -6,6 +6,7 @@ target/*
 .attach_pid*
 .idea
 *.iml
+migration.db
 /target
 .sts4-cache/
 .vscode/*
