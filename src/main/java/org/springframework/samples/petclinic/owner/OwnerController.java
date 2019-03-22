@@ -59,11 +59,11 @@ class OwnerController {
     }
 
     @PostMapping("/owners/new")
-    public String processCreationForm(@Valid Owner owner, BindingResult result) {
+    public String processCreationForm(@Valid Owner owner, BindingResult result) { 
         if (result.hasErrors()) {
             return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
         } else {
-            this.owners.save(owner);
+            this.owners.save(owner); // insert owner
             return "redirect:/owners/" + owner.getId();
         }
     }
@@ -101,8 +101,8 @@ class OwnerController {
 
     @GetMapping("/owners/{ownerId}/edit")
     public String initUpdateOwnerForm(@PathVariable("ownerId") int ownerId, Model model) {
-        Owner owner = this.owners.findById(ownerId);
-        model.addAttribute(owner);
+        Owner owner = this.owners.findById(ownerId); // find owner to update
+        model.addAttribute(owner); 
         return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
     }
 
@@ -112,7 +112,7 @@ class OwnerController {
             return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
         } else {
             owner.setId(ownerId);
-            this.owners.save(owner);
+            this.owners.save(owner); // update owner
             return "redirect:/owners/{ownerId}";
         }
     }
@@ -126,7 +126,7 @@ class OwnerController {
     @GetMapping("/owners/{ownerId}")
     public ModelAndView showOwner(@PathVariable("ownerId") int ownerId) {
         ModelAndView mav = new ModelAndView("owners/ownerDetails");
-        mav.addObject(this.owners.findById(ownerId));
+        mav.addObject(this.owners.findById(ownerId)); // find owner to display
         return mav;
     }
 
