@@ -5,36 +5,36 @@
 -- Navigate to execute SQL and copy this script below.
 -- Proceed to data.sql and execute that script as well.
 
-CREATE TABLE `vets` (
+CREATE TABLE IF NOT EXISTS `vets` (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT,
     `first_name` TEXT,
     `last_name` TEXT
 );
 
-CREATE INDEX `last_name_vets` ON `vets` ( `last_name` );
+CREATE INDEX IF NOT EXISTS `last_name_vets` ON `vets` ( `last_name` );
 
-CREATE TABLE `specialties` (
+CREATE TABLE IF NOT EXISTS `specialties` (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT,
     `name` TEXT
 );
 
-CREATE INDEX `name_specialities` ON `specialties` ( `name` );
+CREATE INDEX IF NOT EXISTS `name_specialities` ON `specialties` ( `name` );
 
 
-CREATE TABLE `vet_specialties` (
+CREATE TABLE IF NOT EXISTS `vet_specialties` (
 	`vet_id`	INTEGER NOT NULL,
 	`specialty_id`	INTEGER NOT NULL,
 	FOREIGN KEY(`specialty_id`) REFERENCES `specialties`(`id`),
 	FOREIGN KEY(`vet_id`) REFERENCES `vets`(`id`)
 );
 
-CREATE TABLE `types` (
+CREATE TABLE IF NOT EXISTS `types` (
 	`id`	INTEGER PRIMARY KEY AUTOINCREMENT,
 	`name`	TEXT
 );
-CREATE INDEX `name_type` ON `types` ( `name` );
+CREATE INDEX IF NOT EXISTS `name_types` ON `types` ( `name` );
 
-CREATE TABLE `owners` (
+CREATE TABLE IF NOT EXISTS `owners` (
 	`id`	INTEGER PRIMARY KEY AUTOINCREMENT,
 	`first_name`	TEXT,
 	`last_name`	TEXT,
@@ -43,9 +43,9 @@ CREATE TABLE `owners` (
 	`telephone`	TEXT
 );
 
-CREATE INDEX `last_name` ON `owners` ( `last_name` );
+CREATE INDEX IF NOT EXISTS `last_name` ON `owners` ( `last_name` );
 
-CREATE TABLE `pets` (
+CREATE TABLE IF NOT EXISTS `pets` (
 	`id`	INTEGER PRIMARY KEY AUTOINCREMENT,
 	`name`	TEXT,
 	`birth_date`	TEXT,
@@ -53,9 +53,9 @@ CREATE TABLE `pets` (
 	`owner_id`	INTEGER NOT NULL,
 	FOREIGN KEY(`owner_id`) REFERENCES `owners`(`id`)
 );
-CREATE INDEX `name_pets` ON `pets` ( `name` );
+CREATE INDEX IF NOT EXISTS `name_pets` ON `pets` ( `name` );
 
-CREATE TABLE `visits` (
+CREATE TABLE IF NOT EXISTS `visits` (
 	`id`	INTEGER PRIMARY KEY AUTOINCREMENT,
 	`pet_id`	INTEGER,
 	`visit_date`	TEXT,
