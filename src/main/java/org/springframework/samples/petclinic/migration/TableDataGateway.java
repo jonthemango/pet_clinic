@@ -20,6 +20,7 @@ public class TableDataGateway {
         this.db = db;
     }
 
+
     public void insertOwner(Owner owner){
         db.execute(String.format("INSERT INTO owners (first_name, last_name, address, city, telephone) VALUES ('%s','%s','%s','%s','%s')", owner.getFirstName(), owner.getLastName(), owner.getAddress(), owner.getCity(), owner.getTelephone()));
     }

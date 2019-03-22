@@ -19,6 +19,15 @@ public class SQLiteDB  implements SqlDB {
         }
     }
 
+    public SQLiteDB(String dbLocation){
+        try{
+            Class.forName("org.sqlite.JDBC");
+            this.conn = DriverManager.getConnection("jdbc:sqlite:" + dbLocation);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     /*
     Basic insert method. Now deprecated in favor of .execute
      */

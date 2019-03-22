@@ -5,6 +5,7 @@ import org.springframework.samples.petclinic.owner.Owner;
 import org.springframework.samples.petclinic.owner.OwnerRepository;
 import org.springframework.samples.petclinic.owner.PetRepository;
 import org.springframework.samples.petclinic.owner.PetType;
+import org.springframework.samples.petclinic.toggles.FeatureToggleManager;
 import org.springframework.samples.petclinic.vet.Vet;
 import org.springframework.samples.petclinic.vet.VetRepository;
 import org.springframework.samples.petclinic.vet.Vets;
@@ -57,6 +58,7 @@ public class Forklift {
 
     private SqlDB db;
     private TableDataGateway tdg;
+    private FeatureToggleManager featureToggleManager;
 
     public Forklift(SqlDB db){
         this.db = db;
@@ -68,14 +70,19 @@ public class Forklift {
      */
     public void initSchema(){
 
-        for (String statement : dropTableStatements){
-            db.execute(statement);
-        }
+        if (FeatureToggleManager.DO_DROP_TABLES_UPON_FORKLIFT) dropClinicTables();
+
 
         for (String statement : initSchemaStatements){
             db.execute(statement);
         }
         System.out.println("INIT SCHEMA COMPLETED.");
+    }
+
+    public void dropClinicTables(){
+        for (String statement : dropTableStatements){
+            db.execute(statement);
+        }
     }
 
     /*

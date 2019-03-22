@@ -70,4 +70,12 @@ public class Driver {
         return "Forklift executed at: " + now;
     }
 
+    public String emptyDB(){
+        String now = java.time.LocalTime.now().toString();
+        SqlDB db = new SQLiteDB();
+        Forklift forklift = new Forklift(db);
+        forklift.dropClinicTables();
+        return "Dropped tables at: " + now;
+    }
+
 }
