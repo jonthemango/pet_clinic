@@ -8,6 +8,8 @@ import org.springframework.samples.petclinic.owner.PetType;
 import org.springframework.samples.petclinic.toggles.FeatureToggleManager;
 import org.springframework.samples.petclinic.vet.Vet;
 import org.springframework.samples.petclinic.vet.VetRepository;
+import org.springframework.samples.petclinic.visit.Visit;
+import org.springframework.samples.petclinic.visit.VisitRepository;
 import org.springframework.samples.petclinic.owner.Pet;
 
 import java.util.ArrayList;
@@ -115,16 +117,22 @@ public class Forklift {
         }
     }
 
-	public void liftOwners(OwnerRepository owners) {
+	public void liftOwnersAndPets(OwnerRepository owners) {
         Collection<Owner> ownersCollection = owners.findAll();
         for (Owner owner : ownersCollection){
             this.tdg.insertOwner(owner); // insert the owner
             Collection<Pet> pets = owner.getPets(); // get his pets
-            System.out.println(owner); // insert them
-            for(Pet pet: pets){
+            for(Pet pet: pets){ // insert each of them
                 this.tdg.insertPet(pet);
-                System.out.println(pet);
             }
+        }
+	}
+
+	public void liftVisits(VisitRepository visits) {
+        Collection<Visit> visitsCollection = visits.findAll();
+        for (Visit visit : visitsCollection){
+            System.out.println(visit+" -- yuh \n");
+            this.tdg.insertVisit(visit); // insert the owner
         }
 	}
 }

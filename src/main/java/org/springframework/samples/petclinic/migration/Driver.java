@@ -64,9 +64,10 @@ public class Driver {
         Forklift forklift = new Forklift(db);
         forklift.initSchema();
         forklift.liftPetTypes(pets);
-        forklift.liftSpecialties();
         forklift.liftVets(vets);
-        forklift.liftOwners(owners);
+        forklift.liftOwnersAndPets(owners);
+        forklift.liftVisits(visits);
+        forklift.liftSpecialties();
         db.close();
         return "Forklift executed at: " + now;
     }
