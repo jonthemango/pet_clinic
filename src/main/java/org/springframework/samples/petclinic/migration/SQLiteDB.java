@@ -7,6 +7,9 @@ public class SQLiteDB  implements SqlDB {
     Connection conn = null;
     Statement statement = null;
 
+    /*
+    If migrations.db does not exist at the root then this file will create it for you.
+     */
     public SQLiteDB(){
         try{
             Class.forName("org.sqlite.JDBC");
@@ -16,6 +19,9 @@ public class SQLiteDB  implements SqlDB {
         }
     }
 
+    /*
+    Basic insert method. Now deprecated in favor of .execute
+     */
     public boolean insert(){
         try {
             this.statement = conn.createStatement();
@@ -27,6 +33,9 @@ public class SQLiteDB  implements SqlDB {
         return false;
     }
 
+    /*
+    Execute any SQL statement, this method does not return result sets.
+     */
     public void execute(String sql){
         try{
             this.statement = conn.createStatement();
@@ -36,6 +45,19 @@ public class SQLiteDB  implements SqlDB {
         }
     }
 
+    /*
+    Use this method to invoke sql statements where there is a result set returns (ie. selects)
+     */
+    public ResultSet select(String sql) {
+        try{
+            this.statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+            return resultSet;
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 
     public void close(){
