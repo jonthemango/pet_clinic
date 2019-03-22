@@ -8,7 +8,7 @@ import org.springframework.samples.petclinic.owner.PetType;
 import org.springframework.samples.petclinic.toggles.FeatureToggleManager;
 import org.springframework.samples.petclinic.vet.Vet;
 import org.springframework.samples.petclinic.vet.VetRepository;
-import org.springframework.samples.petclinic.vet.Vets;
+import org.springframework.samples.petclinic.owner.Pet;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -88,7 +88,7 @@ public class Forklift {
     /*
     This method forklifts the PetType table
      */
-    public void liftTypes(PetRepository pets){
+    public void liftPetTypes(PetRepository pets){
         Collection<PetType> typeCollection = pets.findPetTypes();
         for (PetType type : typeCollection){
             this.tdg.insertType(type);
@@ -111,6 +111,20 @@ public class Forklift {
         Collection<Vet> vetCollection = vets.findAll();
         for (Vet vet : vetCollection){
             this.tdg.insertVet(vet);
+
         }
     }
+
+	public void liftOwners(OwnerRepository owners) {
+        Collection<Owner> ownersCollection = owners.findAll();
+        for (Owner owner : ownersCollection){
+            this.tdg.insertOwner(owner); // insert the owner
+            Collection<Pet> pets = owner.getPets(); // get his pets
+            System.out.println(owner); // insert them
+            for(Pet pet: pets){
+                this.tdg.insertPet(pet);
+                System.out.println(pet);
+            }
+        }
+	}
 }

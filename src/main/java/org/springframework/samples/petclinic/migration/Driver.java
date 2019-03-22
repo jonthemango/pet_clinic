@@ -63,9 +63,10 @@ public class Driver {
         SqlDB db = new SQLiteDB();
         Forklift forklift = new Forklift(db);
         forklift.initSchema();
-        forklift.liftTypes(pets);
+        forklift.liftPetTypes(pets);
         forklift.liftSpecialties();
         forklift.liftVets(vets);
+        forklift.liftOwners(owners);
         db.close();
         return "Forklift executed at: " + now;
     }
