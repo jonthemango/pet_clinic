@@ -80,4 +80,18 @@ public class Driver {
         return "Dropped tables at: " + now;
     }
 
+	public String consistencyChecker() {
+        String now = java.time.LocalTime.now().toString();
+        SqlDB db = new SQLiteDB();
+        ConsistencyChecker checker = new ConsistencyChecker(db);
+        checker.connectRepos(vets, owners, pets, visits);
+        
+
+
+        return "";
+	}
+
+
+
+
 }

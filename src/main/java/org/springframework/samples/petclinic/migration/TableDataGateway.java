@@ -7,6 +7,8 @@ import org.springframework.samples.petclinic.owner.PetType;
 import org.springframework.samples.petclinic.vet.Vet;
 import org.springframework.samples.petclinic.visit.Visit;
 
+import java.sql.ResultSet;
+import java.util.Collection;
 import java.util.List;
 
 public class TableDataGateway {
@@ -53,8 +55,10 @@ public class TableDataGateway {
         db.execute(String.format("INSERT INTO visits (pet_id, visit_date, description) VALUES (%d, '%s', '%s')", visit.getPetId(), visit.getDate().toString(), visit.getDescription()));
     }
 
+    public Collection<Vet> getVets(){
 
-
+        return null;
+    }
 
 
 }

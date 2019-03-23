@@ -2,14 +2,11 @@ package org.springframework.samples.petclinic.migration;
 
 
 import org.springframework.samples.petclinic.owner.OwnerRepository;
-import org.springframework.samples.petclinic.owner.Pet;
 import org.springframework.samples.petclinic.owner.PetRepository;
 import org.springframework.samples.petclinic.vet.VetRepository;
 import org.springframework.samples.petclinic.visit.VisitRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
@@ -47,6 +44,15 @@ class MigrationController {
     public ModelAndView clearDB(){
         String response = driver.emptyDB();
         response += "\n" + driver.listDB();
+        ModelAndView mav = new ModelAndView("migrations/migrations");
+        mav.addObject("code", "\n" + response);
+        return mav;
+    }
+
+    @GetMapping("/consistencyChecker")
+    public ModelAndView consistencyChecker(){
+        String response = driver.consistencyChecker();
+
         ModelAndView mav = new ModelAndView("migrations/migrations");
         mav.addObject("code", "\n" + response);
         return mav;

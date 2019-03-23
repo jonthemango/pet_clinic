@@ -12,9 +12,8 @@ import org.springframework.samples.petclinic.visit.Visit;
 import org.springframework.samples.petclinic.visit.VisitRepository;
 import org.springframework.samples.petclinic.owner.Pet;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+
 
 public class Forklift {
 
@@ -30,6 +29,7 @@ public class Forklift {
         "DROP TABLE IF EXISTS types",
         "DROP TABLE IF EXISTS owners",
     };
+
 
     /*
     Queries that create structure of the tables and indices.
@@ -60,7 +60,6 @@ public class Forklift {
 
     private SqlDB db;
     private TableDataGateway tdg;
-    private FeatureToggleManager featureToggleManager;
 
     public Forklift(SqlDB db){
         this.db = db;
@@ -131,7 +130,6 @@ public class Forklift {
 	public void liftVisits(VisitRepository visits) {
         Collection<Visit> visitsCollection = visits.findAll();
         for (Visit visit : visitsCollection){
-            System.out.println(visit+" -- yuh \n");
             this.tdg.insertVisit(visit); // insert the owner
         }
 	}
