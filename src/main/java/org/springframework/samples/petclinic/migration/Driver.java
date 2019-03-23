@@ -86,7 +86,8 @@ public class Driver {
         ConsistencyChecker checker = new ConsistencyChecker(db);
         checker.connectRepos(vets, owners, pets, visits);
         
-        return checker.vetsChecker();
+
+        return now + "\n" + checker.vetsChecker();
 	}
 
 

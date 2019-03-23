@@ -1,5 +1,6 @@
 package org.springframework.samples.petclinic.migration;
 
+import java.sql.ResultSet;
 import java.util.Collection;
 
 import org.springframework.samples.petclinic.owner.OwnerRepository;
@@ -36,26 +37,42 @@ public class ConsistencyChecker {
           // first retrive the same id;
             // if it exists then check theyre equal
             // else create it in new data store
-        int count = 0;
-            
+        int countInsert = 0;
+        int countUpdate = 0;
         for (Vet vet : vetCollectionOld){
             
             int id = vet.getId();
-            
-            Vet newVet = (Vet) this.tdg.getById(id, "vets"); 
-            if (newVet == null){
-                // insert it
+            System.out.print(id);
+            ResultSet resultSet = this.tdg.getById(id, "vets");
+            boolean isSame;
+            String firstName;
+            String lastName;           
+            try{
+                firstName = resultSet.getString("first_name");
+                System.out.println(firstName);
+                lastName = resultSet.getString("last_name");
+                System.out.println(lastName);
+                isSame = vet.getFirstName().equals(firstName);
+                System.out.println(vet.getFirstName());
+                isSame = isSame && vet.getLastName().equals(lastName);
+                System.out.println(vet.getLastName());
+                if (!isSame){
+                    this.tdg.deleteById(resultSet.getInt("id"), "vets");
+                    this.tdg.insertVet(vet);
+                    countUpdate ++; 
+                }
+            } catch (Exception e){
+                e.printStackTrace();
                 this.tdg.insertVet(vet);
-                count++;
+                countInsert++;
             }
-            else if (!vet.equals(newVet)){
-                this.tdg.deleteById(newVet.getId(), "vets");
-                this.tdg.insertVet(vet);
-                count ++; 
-            }       
-
         }
 
-        return "Number of inconsistant rows: " + String.valueOf(count);
+        return "Number of inserted rows: " + String.valueOf(countInsert) + "\nNumber of updated rows: " + String.valueOf(countUpdate);
     }
+
+    
+
+
+    
 }
