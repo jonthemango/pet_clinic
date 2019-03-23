@@ -76,4 +76,10 @@ public class Vet extends Person {
         getSpecialtiesInternal().add(specialty);
     }
 
+    public boolean equals(Vet vet){
+        if (this.getFirstName().equals(vet.getFirstName()) && this.getLastName().equals(vet.getLastName())){
+                return true;
+        } 
+        return false;
+    }
 }

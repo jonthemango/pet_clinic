@@ -31,16 +31,31 @@ public class ConsistencyChecker {
         this.visits = visits; 
     }
 
-    public void vetsChecker(){
+    public String vetsChecker(){
         Collection<Vet> vetCollectionOld = vets.findAll(); // old data store
-        Collection<Vet> vetCollectionNew = tdg.getVets();
+          // first retrive the same id;
+            // if it exists then check theyre equal
+            // else create it in new data store
+        int count = 0;
+            
+        for (Vet vet : vetCollectionOld){
+            
+            int id = vet.getId();
+            
+            Vet newVet = (Vet) this.tdg.getById(id, "vets"); 
+            if (newVet == null){
+                // insert it
+                this.tdg.insertVet(vet);
+                count++;
+            }
+            else if (!vet.equals(newVet)){
+                this.tdg.deleteById(newVet.getId(), "vets");
+                this.tdg.insertVet(vet);
+                count ++; 
+            }       
 
+        }
 
+        return "Number of inconsistant rows: " + String.valueOf(count);
     }
-
-
-    
-    
-    
-    
 }
