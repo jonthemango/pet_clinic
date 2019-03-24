@@ -84,6 +84,14 @@ public class TableDataGateway {
         db.execute(sql);
     }
 
+    public String getPetType(int id) throws SQLException {
+        String sql;
+        sql = String.format("SELECT * FROM types WHERE id = %d", id);
+        String result = db.select(sql).getString("name");
+        
+        return result;
+    }
+
     public void insertVetSpecialty(Vet vet, Specialty specialty) {
         String sql;
         HashMap<String,String> map = id(specialty);

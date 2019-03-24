@@ -63,6 +63,7 @@ public class ConsistencyChecker {
                 System.out.println(vet.getFirstName());
                 isSame = isSame && vet.getLastName().equals(lastName);
                 System.out.println(vet.getLastName());
+               
                 if (!isSame){
                     this.tdg.deleteById(resultSet.getInt("id"), "vets");
                     this.tdg.insertVet(vet);
@@ -74,7 +75,7 @@ public class ConsistencyChecker {
                 countInsert++;
             }
         }
-        consistency += "Number of inserted rows: " + String.valueOf(countInsert) + "\nNumber of updated rows: " + String.valueOf(countUpdate);
+        consistency += "Number of inserted rows vet table : " + String.valueOf(countInsert) + "\n Number of updated rows vet table: " + String.valueOf(countUpdate);
         return consistency;
     }
 
@@ -125,7 +126,6 @@ public class ConsistencyChecker {
     }
     
     public String ownerChecker(){
-        System.out.println("Ramez");
         Collection<Owner> ownersCollectionOld = owners.findAll();
         // first retrive the same id;
         // if it exists then check theyre equal
@@ -133,8 +133,49 @@ public class ConsistencyChecker {
         int countInsert = 0;
         int countUpdate = 0;
         for (Owner owner : ownersCollectionOld) {
-            Collection<Pet> pets = owner.getPets();    
+            Collection<Pet> pets = owner.getPets();
+            String petName;
+            String birthDate;
+            String type;
+            int ownerId;
+            Boolean samePet;
+            for(Pet pet : pets){// name, birth_date, type_id, owner_id 
+                int id = pet.getId();
+                ResultSet newPet = this.tdg.getById(id, "pets");
 
+                try{
+                    petName = newPet.getString("name");
+                    birthDate = newPet.getString("birth_date");
+                    type = tdg.getPetType(newPet.getInt("type_id"));
+                    ownerId = newPet.getInt("owner_id");
+
+                    samePet=        pet.getName().equals(petName) 
+                                && pet.getBirthDate().toString().equals(birthDate) 
+                                && pet.getType().toString().equals(type)
+                                && pet.getOwner().getId().equals(ownerId);
+                    
+                    System.out.println("Start of pet comparaison " + samePet);
+                    System.out.println(pet.getBirthDate().toString());
+                    System.out.println(birthDate);
+                    System.out.println(pet.getType());
+                    System.out.println(type);
+                    System.out.println(pet.getOwner().getId());
+                    System.out.println(ownerId);
+                    System.out.println("end of pet comparaison");
+
+
+                    if(!samePet){
+                         this.tdg.deleteById(newPet.getInt("id"), "pets");
+                         this.tdg.insertPet(pet);
+                        countUpdate++;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    this.tdg.insertPet(pet);
+                    countInsert++;
+                }
+            }
+            
             int id = owner.getId();
             System.out.print(id);
             ResultSet resultSet = this.tdg.getById(id, "owners");
@@ -145,7 +186,6 @@ public class ConsistencyChecker {
             String city;
             String telephone; 
 
-            String description;
             try {
                 firstName = resultSet.getString("first_name");
                // System.out.println("the first name is" + firstName);
@@ -169,12 +209,12 @@ public class ConsistencyChecker {
                             && owner.getTelephone().equals(telephone);
                 
                 if (!isSame) {
-                  this.tdg.deleteById(resultSet.getInt("id"), "visits");
+                    this.tdg.deleteById(resultSet.getInt("id"), "visits");
                     this.tdg.insertOwner(owner);
                     countUpdate++;
                 }
             } catch (Exception e) {
-                 e.printStackTrace();
+                e.printStackTrace();
                 this.tdg.insertOwner(owner);
                 countInsert++;
             }
