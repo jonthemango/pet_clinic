@@ -25,7 +25,7 @@ public class ConsistencyChecker {
     private VisitRepository visits;
     private int inconsistency;
 
-    private String consistency;
+    private String consistency = "";
 
     public ConsistencyChecker(SqlDB db) {
         this.db = db;
@@ -90,8 +90,7 @@ public class ConsistencyChecker {
             }
         }
         this.inconsistency += countInsert + countUpdate;
-        consistency += "Number of inserted rows vet table : " + String.valueOf(countInsert) + "\n Number of updated rows vet table: " + String.valueOf(countUpdate);
-        return consistency;
+        return "Number of created vets : " + String.valueOf(countInsert) + "\n" + "Number of updated vets: " + String.valueOf(countUpdate);
     }
 
     public String visitsChecker(){
@@ -135,10 +134,7 @@ public class ConsistencyChecker {
         }
     
         this.inconsistency += countInsert + countUpdate;
-        consistency += "Number of inserted rows: " + String.valueOf(countInsert) + "\nNumber of updated rows: "
-                + String.valueOf(countUpdate);
-        return "Number of inserted rows: " + String.valueOf(countInsert) + "\nNumber of updated rows: "
-                + String.valueOf(countUpdate);
+        return "Number of created visits: " + String.valueOf(countInsert) + "\n" +"Number of updated visits: " + String.valueOf(countUpdate);
     }
     
     public String ownersChecker(){
@@ -148,6 +144,9 @@ public class ConsistencyChecker {
         // else create it in new data store
         int countInsert = 0;
         int countUpdate = 0;
+        int countInsertPet = 0;
+        int countUpdatePet = 0;
+                
         for (Owner owner : ownersCollectionOld) {
             Collection<Pet> pets = owner.getPets();
             String petName;
@@ -183,12 +182,12 @@ public class ConsistencyChecker {
                     if(!samePet){
                          this.tdg.deleteById(newPet.getInt("id"), "pets");
                          this.tdg.insertPet(pet);
-                        countUpdate++;
+                        countUpdatePet++;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                     this.tdg.insertPet(pet);
-                    countInsert++;
+                    countInsertPet++;
                 }
             }
             
@@ -236,11 +235,9 @@ public class ConsistencyChecker {
             }
         }
 
-        this.inconsistency += countInsert + countUpdate;
-        consistency += "Number of inserted rows: " + String.valueOf(countInsert) + "\nNumber of updated rows: "
-                + String.valueOf(countUpdate);
-        return "Number of inserted rows: " + String.valueOf(countInsert) + "\nNumber of updated rows: "
-                + String.valueOf(countUpdate);
+        this.inconsistency += countInsert + countUpdate + countInsertPet + countUpdatePet;
+        return "Number of created owners: " + String.valueOf(countInsertPet) + "\n" +"Number of updated owners: " + String.valueOf(countUpdatePet) + "\n" +
+               "Number of created pets: " + String.valueOf(countInsert) + "\n" +"Number of updated pets: " + String.valueOf(countUpdate);
 
 
 

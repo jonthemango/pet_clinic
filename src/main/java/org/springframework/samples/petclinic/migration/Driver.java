@@ -95,7 +95,10 @@ public class Driver {
         checker.setInconsistency(0);
 
         String result = now + "\n" + checker.vetsChecker() + "\n" + checker.visitsChecker() + "\n" + checker.ownersChecker();
+        
         this.inconsistency = checker.getInconsistency();
+
+        result+= "\n" + "Total inconsistencies: "+this.inconsistency;
         
         return result;
     }
