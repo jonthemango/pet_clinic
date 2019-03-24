@@ -87,7 +87,7 @@ public class Driver {
         checker.connectRepos(vets, owners, pets, visits);
         
 
-        return now + "\n" + checker.vetsChecker() + "\n" + checker.visitsChecker() ;
+        return now + "\n" + checker.vetsChecker() + "\n" + checker.visitsChecker() + "\n" + checker.ownerChecker();
 	}
 
 

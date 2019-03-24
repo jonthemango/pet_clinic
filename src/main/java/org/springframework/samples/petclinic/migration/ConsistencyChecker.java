@@ -1,9 +1,11 @@
 package org.springframework.samples.petclinic.migration;
 
+
 import java.sql.ResultSet;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 
+import org.springframework.samples.petclinic.owner.Owner;
 import org.springframework.samples.petclinic.owner.OwnerRepository;
 import org.springframework.samples.petclinic.owner.Pet;
 import org.springframework.samples.petclinic.owner.PetRepository;
@@ -90,9 +92,9 @@ public class ConsistencyChecker {
             ResultSet resultSet = this.tdg.getById(id, "visits");
             boolean isSame;
             int petID;
-            String date;
-            
+            String date;          
             String description;
+            
             try {
                 petID = resultSet.getInt("pet_id");
                 date = resultSet.getString("visit_date");
@@ -122,6 +124,72 @@ public class ConsistencyChecker {
                 + String.valueOf(countUpdate);
     }
     
+    public String ownerChecker(){
+        System.out.println("Ramez");
+        Collection<Owner> ownersCollectionOld = owners.findAll();
+        // first retrive the same id;
+        // if it exists then check theyre equal
+        // else create it in new data store
+        int countInsert = 0;
+        int countUpdate = 0;
+        for (Owner owner : ownersCollectionOld) {
+            Collection<Pet> pets = owner.getPets();    
+
+            int id = owner.getId();
+            System.out.print(id);
+            ResultSet resultSet = this.tdg.getById(id, "owners");
+            boolean isSame;
+            String firstName;
+            String lastName;
+            String address;
+            String city;
+            String telephone; 
+
+            String description;
+            try {
+                firstName = resultSet.getString("first_name");
+               // System.out.println("the first name is" + firstName);
+                //System.out.println(owner.getFirstName());
+                lastName = resultSet.getString("last_name");
+            //    System.out.println("the last name is" +lastName);
+            //    System.out.println(owner.getLastName());
+                address = resultSet.getString("address");
+            //    System.out.println(address);
+            //    System.out.println(owner.getAddress());
+                city = resultSet.getString("city");
+            //    System.out.println(city);
+            //    System.out.println(owner.getCity());
+                telephone = resultSet.getString("telephone"); 
+            //    System.out.println(telephone);
+            //   System.out.println(owner.getTelephone());
+
+                isSame = owner.getFirstName().equals(firstName) && owner.getLastName().equals(lastName)
+                            && owner.getAddress().equals(address) 
+                            && owner.getCity().equals(city)
+                            && owner.getTelephone().equals(telephone);
+                
+                if (!isSame) {
+                  this.tdg.deleteById(resultSet.getInt("id"), "visits");
+                    this.tdg.insertOwner(owner);
+                    countUpdate++;
+                }
+            } catch (Exception e) {
+                 e.printStackTrace();
+                this.tdg.insertOwner(owner);
+                countInsert++;
+            }
+        }
+
+        consistency += "Number of inserted rows: " + String.valueOf(countInsert) + "\nNumber of updated rows: "
+                + String.valueOf(countUpdate);
+        return "Number of inserted rows: " + String.valueOf(countInsert) + "\nNumber of updated rows: "
+                + String.valueOf(countUpdate);
+
+
+
+        
+    }
+
 }
     
 
