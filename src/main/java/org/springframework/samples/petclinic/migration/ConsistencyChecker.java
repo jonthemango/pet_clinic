@@ -23,16 +23,30 @@ public class ConsistencyChecker {
     private OwnerRepository owners;
     private PetRepository pets;
     private VisitRepository visits;
+    private int inconsistency;
 
-    private String consistency; 
+    private String consistency;
 
-    public ConsistencyChecker(SqlDB db){
+    public ConsistencyChecker(SqlDB db) {
         this.db = db;
         this.tdg = new TableDataGateway(db);
     }
 
+    /**
+     * @return the inconsistency
+     */
+    public int getInconsistency() {
+        return inconsistency;
+    }
 
-    public void connectRepos(VetRepository vets, OwnerRepository owners, PetRepository pets, VisitRepository visits){
+    /**
+     * @param inconsistency the inconsistency to set
+     */
+    public void setInconsistency(int inconsistency) {
+        this.inconsistency = inconsistency;
+    }
+    
+    public void connectRepos(VetRepository vets, OwnerRepository owners, PetRepository pets, VisitRepository visits) {
         this.vets = vets;
         this.owners = owners;
         this.pets = pets;
@@ -75,6 +89,7 @@ public class ConsistencyChecker {
                 countInsert++;
             }
         }
+        this.inconsistency += countInsert + countUpdate;
         consistency += "Number of inserted rows vet table : " + String.valueOf(countInsert) + "\n Number of updated rows vet table: " + String.valueOf(countUpdate);
         return consistency;
     }
@@ -119,13 +134,14 @@ public class ConsistencyChecker {
             }
         }
     
-       consistency += "Number of inserted rows: " + String.valueOf(countInsert) + "\nNumber of updated rows: "
+        this.inconsistency += countInsert + countUpdate;
+        consistency += "Number of inserted rows: " + String.valueOf(countInsert) + "\nNumber of updated rows: "
                 + String.valueOf(countUpdate);
         return "Number of inserted rows: " + String.valueOf(countInsert) + "\nNumber of updated rows: "
                 + String.valueOf(countUpdate);
     }
     
-    public String ownerChecker(){
+    public String ownersChecker(){
         Collection<Owner> ownersCollectionOld = owners.findAll();
         // first retrive the same id;
         // if it exists then check theyre equal
@@ -220,6 +236,7 @@ public class ConsistencyChecker {
             }
         }
 
+        this.inconsistency += countInsert + countUpdate;
         consistency += "Number of inserted rows: " + String.valueOf(countInsert) + "\nNumber of updated rows: "
                 + String.valueOf(countUpdate);
         return "Number of inserted rows: " + String.valueOf(countInsert) + "\nNumber of updated rows: "

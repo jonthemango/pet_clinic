@@ -13,6 +13,7 @@ public class Driver {
     private OwnerRepository owners;
     private PetRepository pets;
     private VisitRepository visits;
+    private int inconsistency;
 
     /*
     Gives us access to the old database, pass these along to your objects/methods to use them.
@@ -80,17 +81,24 @@ public class Driver {
         return "Dropped tables at: " + now;
     }
 
+    //returns the number of inconsistencies between both datasets
+    public int getInconsistency(){
+        return this.inconsistency;
+    }
+
 	public String consistencyChecker() {
         String now = java.time.LocalTime.now().toString();
         SqlDB db = new SQLiteDB();
         ConsistencyChecker checker = new ConsistencyChecker(db);
         checker.connectRepos(vets, owners, pets, visits);
         
+        checker.setInconsistency(0);
 
-        return now + "\n" + checker.vetsChecker() + "\n" + checker.visitsChecker() + "\n" + checker.ownerChecker();
-	}
-
-
+        String result = now + "\n" + checker.vetsChecker() + "\n" + checker.visitsChecker() + "\n" + checker.ownersChecker();
+        this.inconsistency = checker.getInconsistency();
+        
+        return result;
+    }
 
 
 }
