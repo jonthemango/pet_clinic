@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package org.springframework.samples.petclinic.owner;
+import org.springframework.samples.petclinic.toggles.FeatureToggleManager;
+import org.springframework.samples.petclinic.migration.*;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -37,6 +39,8 @@ class PetController {
     private static final String VIEWS_PETS_CREATE_OR_UPDATE_FORM = "pets/createOrUpdatePetForm";
     private final PetRepository pets;
     private final OwnerRepository owners;
+    private SQLiteDB db;   
+    private TableDataGateway tdg;
 
     public PetController(PetRepository pets, OwnerRepository owners) {
         this.pets = pets;
@@ -81,7 +85,19 @@ class PetController {
             model.put("pet", pet);
             return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
         } else {
-            this.pets.save(pet);
+            // insert in old db
+            this.pets.save(pet); 
+
+            // check if feature toggle is on
+            if(FeatureToggleManager.DO_RUN_CONSISTENCY_CHECKER) 
+            {	
+            	db = new SQLiteDB();
+            	tdg = new TableDataGateway(db);
+
+            	// insert into new SQLite db
+                tdg.insertPet(pet);
+            }
+
             return "redirect:/owners/{ownerId}";
         }
     }

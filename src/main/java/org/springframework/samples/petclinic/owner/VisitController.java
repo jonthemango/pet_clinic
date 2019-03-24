@@ -15,6 +15,10 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import org.springframework.samples.petclinic.migration.SQLiteDB;
+import org.springframework.samples.petclinic.migration.SqlDB;
+import org.springframework.samples.petclinic.migration.TableDataGateway;
+import org.springframework.samples.petclinic.toggles.FeatureToggleManager;
 import org.springframework.samples.petclinic.visit.Visit;
 import org.springframework.samples.petclinic.visit.VisitRepository;
 import org.springframework.stereotype.Controller;
@@ -37,6 +41,10 @@ class VisitController {
 
     private final VisitRepository visits;
     private final PetRepository pets;
+    
+    private SqlDB db;
+    private TableDataGateway tdg;
+       
 
 
     public VisitController(VisitRepository visits, PetRepository pets) {
@@ -80,7 +88,19 @@ class VisitController {
         if (result.hasErrors()) {
             return "pets/createOrUpdateVisitForm";
         } else {
-            this.visits.save(visit);
+            // insert into old db
+            this.visits.save(visit); 
+
+            // Check if feature toggle is on
+            if(FeatureToggleManager.DO_RUN_CONSISTENCY_CHECKER)
+            {  
+                db = new SQLiteDB();
+                tdg = new TableDataGateway(db);
+                
+                // insert into new SQLite db
+                tdg.insertVisit(visit);
+                }
+            
             return "redirect:/owners/{ownerId}";
         }
     }

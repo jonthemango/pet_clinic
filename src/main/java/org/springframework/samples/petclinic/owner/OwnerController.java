@@ -15,6 +15,9 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import org.springframework.samples.petclinic.toggles.FeatureToggleManager;
+import org.springframework.samples.petclinic.migration.*;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -40,6 +43,10 @@ class OwnerController {
 
     private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
     private final OwnerRepository owners;
+    
+    private SqlDB db;
+    private TableDataGateway tdg;
+       
 
 
     public OwnerController(OwnerRepository clinicService) {
@@ -63,7 +70,27 @@ class OwnerController {
         if (result.hasErrors()) {
             return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
         } else {
-            this.owners.save(owner); // insert owner
+            // insert owner into old db
+            this.owners.save(owner); 
+
+            // check if feature toggle is on
+            if(FeatureToggleManager.DO_RUN_CONSISTENCY_CHECKER)
+            {                  
+                db = new SQLiteDB();
+                tdg = new TableDataGateway(db);
+
+                // insert into new SQLite db
+                tdg.insertOwner(owner);
+            }
+
+            /*
+            Previously, this was used for shadow writes...
+                db = new SQLiteDB();
+                ConsistencyChecker TempChecker = new ConsistencyChecker(db);
+                TempChecker.connectRepos(null, owners, null, null);
+                TempChecker.ownersChecker();
+            */
+
             return "redirect:/owners/" + owner.getId();
         }
     }
