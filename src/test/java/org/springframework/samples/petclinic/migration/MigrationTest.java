@@ -7,7 +7,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.samples.petclinic.owner.Owner;
 import org.springframework.samples.petclinic.owner.OwnerController;
 import org.springframework.samples.petclinic.owner.OwnerRepository;
+import org.springframework.samples.petclinic.owner.Pet;
+import org.springframework.samples.petclinic.owner.PetRepository;
+import org.springframework.samples.petclinic.owner.VisitController;
 import org.springframework.samples.petclinic.toggles.FeatureToggleManager;
+import org.springframework.samples.petclinic.visit.Visit;
+import org.springframework.samples.petclinic.visit.VisitRepository;
 import org.springframework.validation.BindingResult;
 import static org.mockito.BDDMockito.given;
 
@@ -23,13 +28,16 @@ public class MigrationTest {
     private static final int TEST_OWNER_ID = 1;
     private static final int TEST_PET_ID = 3;
     private Owner Robert;
-  /*  private Pet Buddy;*/
+    private Visit Visitation;
+    private Pet Buddy;
     private ConsistencyChecker tempChecker;
     private SQLiteDB db;
     private TableDataGateway tdg;
     
     @MockBean
     private OwnerRepository owners = mock(OwnerRepository.class);
+    private VisitRepository visit = mock(VisitRepository.class);
+    private PetRepository pets;
 
   /*  @MockBean
     private PetRepository pets = mock(PetRepository.class);
@@ -55,15 +63,19 @@ public class MigrationTest {
         Robert.setAddress("110 W. Liberty St.");
         Robert.setCity("La Street");
         Robert.setTelephone("6085551023");
-        given(this.owners.findById(TEST_OWNER_ID)).willReturn(Robert);
+        given(this.owners.findById(TEST_OWNER_ID)).willReturn(Robert);      
 
-     /*   Buddy = new Pet();
-        Buddy.setId(3);
+        Buddy = new Pet();
+        Buddy.setId(TEST_PET_ID);
         Buddy.setName("hamster");
-        Buddy.setOwner(Robert);
-        given(this.pets.findPetTypes()).willReturn(Lists.newArrayList(Buddy));
+        //Buddy.setOwner(Robert);
+        //given(this.pets.findPetTypes()).willReturn(Lists.newArrayList(Buddy));
         given(this.owners.findById(TEST_OWNER_ID)).willReturn(Robert);
-        given(this.pets.findById(TEST_PET_ID)).willReturn(Buddy);*/
+        //given(this.pets.findById(TEST_PET_ID)).willReturn(Buddy);
+
+        Visitation = new Visit();
+        Visitation.setDescription("Quick Checkup");
+        Visitation.setPetId(3);
     }
     
     @Test
@@ -100,7 +112,22 @@ public class MigrationTest {
     }*/
     
     @Test
-    public void testVisitChecker(){
+    public void testVisitMigration(){
+        visit = mock(VisitRepository.class);
+        pets = mock(PetRepository.class);
+    	VisitController controller = new VisitController(visit, pets);
+        BindingResult resultMock = mock(BindingResult.class);
+        when(resultMock.hasErrors()).thenReturn(false);
+        
+        controller.setDbForTest(db,tdg);
+        
+        controller.processNewVisitForm(Visitation, resultMock);
+
+        // verify that owner was saved to old database
+        verify(visit).save(Visitation);
+
+        // verify that owner was saved to new database
+        verify(tdg).insertVisit(Visitation);
 
         
     }

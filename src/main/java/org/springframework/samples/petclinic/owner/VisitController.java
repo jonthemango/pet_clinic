@@ -37,7 +37,7 @@ import java.util.Map;
  * @author Dave Syer
  */
 @Controller
-class VisitController {
+public class VisitController {
 
     private final VisitRepository visits;
     private final PetRepository pets;
@@ -55,6 +55,11 @@ class VisitController {
     @InitBinder
     public void setAllowedFields(WebDataBinder dataBinder) {
         dataBinder.setDisallowedFields("id");
+    }
+
+    public void setDbForTest(SqlDB db, TableDataGateway tdg) {
+        this.db = db;
+        this.tdg = tdg;
     }
 
     /**
@@ -94,8 +99,10 @@ class VisitController {
             // Check if feature toggle is on
             if(FeatureToggleManager.DO_RUN_CONSISTENCY_CHECKER)
             {  
+                if(!FeatureToggleManager.DOING_MIGRATION_TEST){      
                 db = new SQLiteDB();
                 tdg = new TableDataGateway(db);
+                }
                 
                 // insert into new SQLite db
                 tdg.insertVisit(visit);
