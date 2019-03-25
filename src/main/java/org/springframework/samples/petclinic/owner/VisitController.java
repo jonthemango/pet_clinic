@@ -76,6 +76,8 @@ public class VisitController {
     @ModelAttribute("visit")
     public Visit loadPetWithVisit(@PathVariable("petId") int petId, Map<String, Object> model) {
         Pet pet = this.pets.findById(petId);
+        db = new SQLiteDB();
+        tdg = new TableDataGateway(db);
         ResultSet resultSet = this.tdg.getById(petId, "pets");
         try {
             String name = resultSet.getString("name");
