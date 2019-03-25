@@ -81,7 +81,9 @@ public class Forklift {
     }
 
     public void dropClinicTables(){
+        System.out.println("Dropping Tables:");
         for (String statement : dropTableStatements){
+            System.out.println("Drop: " + statement);
             db.execute(statement);
         }
     }
@@ -112,7 +114,6 @@ public class Forklift {
         Collection<Vet> vetCollection = vets.findAll();
         for (Vet vet : vetCollection){
             this.tdg.insertVet(vet);
-
         }
     }
 

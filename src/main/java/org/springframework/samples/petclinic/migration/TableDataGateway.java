@@ -94,10 +94,9 @@ public class TableDataGateway {
 
     public void insertVetSpecialty(Vet vet, Specialty specialty) {
         String sql;
-        HashMap<String,String> map = id(specialty);
-        
-        sql = String.format("INSERT INTO vet_specialties (%s vet_id, specialty_id) VALUES (%s %d, %d)", 
-        map.get("hasId"), map.get("valueOfId"),
+
+        sql = String.format("INSERT INTO vet_specialties (vet_id, specialty_id) VALUES (%d, %d)",
+
         vet.getId(), specialty.getId());
         
         db.execute(sql);

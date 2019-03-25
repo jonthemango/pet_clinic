@@ -29,7 +29,6 @@ public class Driver {
     do any arbritary stuff here and call it in MigrationController
      */
     public String execute(){
-
         return "Driver Executed.";
     }
 
@@ -51,7 +50,11 @@ public class Driver {
             }
         } catch (Exception e){
             e.printStackTrace();
+
+        } finally {
+            db.close();
         }
+
         return response;
     }
 
@@ -78,6 +81,7 @@ public class Driver {
         SqlDB db = new SQLiteDB();
         Forklift forklift = new Forklift(db);
         forklift.dropClinicTables();
+        db.close();
         return "Dropped tables at: " + now;
     }
 
@@ -99,7 +103,7 @@ public class Driver {
         this.inconsistency = checker.getInconsistency();
 
         result+= "\n" + "Total inconsistencies: "+this.inconsistency;
-        
+        db.close();
         return result;
     }
 
