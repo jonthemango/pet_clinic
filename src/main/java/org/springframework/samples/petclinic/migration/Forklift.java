@@ -66,11 +66,6 @@ public class Forklift {
         this.tdg = new TableDataGateway(db);
     }
 
-    public Forklift(SqlDB db, TableDataGateway tdg){
-        this.db = db;
-        this.tdg = tdg;
-    }
-
     /*
     This method initilizes the database to the correct schema.
      */

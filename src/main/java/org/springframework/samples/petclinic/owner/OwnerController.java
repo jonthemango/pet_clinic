@@ -51,7 +51,7 @@ public class OwnerController {
 
     private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
     private final OwnerRepository owners;
-    
+       
 
 
     public OwnerController(OwnerRepository clinicService) {
@@ -123,12 +123,10 @@ public class OwnerController {
         }
 
         // find owners by last name
-        Collection<Owner> results = this.owners.findByLastName(owner.getLastName()); // FROM OLD
+        Collection<Owner> results = this.owners.findByLastName(owner.getLastName());
         db = new SQLiteDB();
         tdg = new TableDataGateway(db);
-        ResultSet resultSet = this.tdg.getOwnersByLastName(owner.getLastName()); // FROM NEW
-        
-
+        ResultSet resultSet = this.tdg.getOwnersByLastName(owner.getLastName());
         Iterator<Owner> oldIterator = results.iterator();
 
         if (results.isEmpty()) {
@@ -150,8 +148,7 @@ public class OwnerController {
             return "redirect:/owners/" + owner.getId();
         } else {
             // multiple owners found
-            model.put("selections", results); // THE RESULTS ARE ADDED HERE. WE NEED TO SOMEHOW REPLACE results : Collection<Owner> with resultSet : ResultSet
-            
+            model.put("selections", results);
             try {
                 while (oldIterator.hasNext() && resultSet.next()) {
                     if (!oldIterator.next().getId().equals(resultSet.getInt("id"))) {
