@@ -51,6 +51,8 @@ class VetController {
         // objects so it is simpler for Object-Xml mapping
         Vets vets = new Vets();
         vets.getVetList().addAll(this.vets.findAll());
+        db = new SQLiteDB();
+        tdg = new TableDataGateway(db);
         ResultSet resultSet = this.tdg.selectTable("vets");
         shadowReadVets(resultSet);
         model.put("vets", vets);
@@ -63,6 +65,8 @@ class VetController {
         // objects so it is simpler for JSon/Object mapping
         Vets vets = new Vets();
         vets.getVetList().addAll(this.vets.findAll());
+        db = new SQLiteDB();
+        tdg = new TableDataGateway(db);
         ResultSet resultSet = this.tdg.selectTable("vets");
         shadowReadVets(resultSet);
         return vets;
