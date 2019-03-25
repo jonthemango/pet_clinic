@@ -13,8 +13,10 @@ import org.springframework.samples.petclinic.owner.VisitController;
 import org.springframework.samples.petclinic.toggles.FeatureToggleManager;
 import org.springframework.samples.petclinic.visit.Visit;
 import org.springframework.samples.petclinic.visit.VisitRepository;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import static org.mockito.BDDMockito.given;
+import org.springframework.samples.petclinic.owner.PetController;
 
 import org.junit.After;
 import org.junit.Before;
@@ -38,16 +40,6 @@ public class MigrationTest {
     private OwnerRepository owners = mock(OwnerRepository.class);
     private VisitRepository visit = mock(VisitRepository.class);
     private PetRepository pets;
-
-  /*  @MockBean
-    private PetRepository pets = mock(PetRepository.class);
-    */
-    
-    @After
-    public void afterTest(){
-        FeatureToggleManager.DOING_MIGRATION_TEST = false;
-    }
-
 
     @Before
     public void setup() {
@@ -77,6 +69,11 @@ public class MigrationTest {
         Visitation.setDescription("Quick Checkup");
         Visitation.setPetId(3);
     }
+
+    @After
+    public void afterTest(){
+        FeatureToggleManager.DOING_MIGRATION_TEST = false;
+    }
     
     @Test
     public void testOwnerMigration() {
@@ -95,21 +92,31 @@ public class MigrationTest {
         // verify that owner was saved to new database
         verify(tdg).insertOwner(Robert);
         
-       
     }
 
-    /*@Test
-    public void testPetChecker() {
+    @Test
+    public void testPetMigration() {
         pets = mock(PetRepository.class);
-        PetController controller = new PetController(pets);
+        //owners = mock(OwnerRepository.class);
+        PetController controller = new PetController(pets, owners);
         BindingResult resultMock = mock(BindingResult.class);
         ModelMap map = mock(ModelMap.class);
         when(resultMock.hasErrors()).thenReturn(false);
 
+        controller.setDbForTest(db,tdg);
+
         controller.processCreationForm(Robert, Buddy, resultMock, map);
 
-        assertEquals(0, tempChecker.getInconsistency());
-    }*/
+        // verify that owner was saved to old database
+        verify(pets).save(Buddy);
+
+        // verify that owner was saved to new database
+        verify(tdg).insertPet(Buddy);
+
+        // assert that the pet being tested was added to the owner's pets
+        assertEquals(Buddy.getOwner(), Robert);
+        
+    }
     
     @Test
     public void testVisitMigration(){

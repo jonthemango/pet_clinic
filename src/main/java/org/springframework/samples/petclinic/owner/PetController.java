@@ -34,18 +34,24 @@ import java.util.Collection;
  */
 @Controller
 @RequestMapping("/owners/{ownerId}")
-class PetController {
+public class PetController {
 
     private static final String VIEWS_PETS_CREATE_OR_UPDATE_FORM = "pets/createOrUpdatePetForm";
     private final PetRepository pets;
     private final OwnerRepository owners;
-    private SQLiteDB db;   
+    private SqlDB db;   
     private TableDataGateway tdg;
 
     public PetController(PetRepository pets, OwnerRepository owners) {
         this.pets = pets;
         this.owners = owners;
     }
+    
+    public void setDbForTest(SqlDB db, TableDataGateway tdg) {
+        this.db = db;
+        this.tdg = tdg;
+    }
+    
 
     @ModelAttribute("types")
     public Collection<PetType> populatePetTypes() {
@@ -91,13 +97,15 @@ class PetController {
             // check if feature toggle is on
             if(FeatureToggleManager.DO_RUN_CONSISTENCY_CHECKER) 
             {	
-            	db = new SQLiteDB();
-            	tdg = new TableDataGateway(db);
-
+            	if(!FeatureToggleManager.DOING_MIGRATION_TEST){      
+                    db = new SQLiteDB();
+                    tdg = new TableDataGateway(db);
+                }
+            
             	// insert into new SQLite db
                 tdg.insertPet(pet);
+            
             }
-
             return "redirect:/owners/{ownerId}";
         }
     }
