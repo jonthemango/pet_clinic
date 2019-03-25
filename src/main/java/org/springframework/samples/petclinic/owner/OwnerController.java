@@ -39,7 +39,7 @@ import java.util.Map;
  * @author Michael Isvy
  */
 @Controller
-class OwnerController {
+public class OwnerController {
 
     private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
     private final OwnerRepository owners;
@@ -75,10 +75,13 @@ class OwnerController {
 
             // check if feature toggle is on
             if(FeatureToggleManager.DO_RUN_CONSISTENCY_CHECKER)
-            {                  
+            {            
+
+                if(!FeatureToggleManager.DOING_MIGRATION_TEST){      
                 db = new SQLiteDB();
                 tdg = new TableDataGateway(db);
-
+                }
+                
                 // insert into new SQLite db
                 tdg.insertOwner(owner);
             }
@@ -93,6 +96,11 @@ class OwnerController {
 
             return "redirect:/owners/" + owner.getId();
         }
+    }
+    // To mock DB's
+    public void setDbForTest(SqlDB db, TableDataGateway tdg) {
+        this.db = db;
+        this.tdg = tdg;
     }
 
     @GetMapping("/owners/find")
