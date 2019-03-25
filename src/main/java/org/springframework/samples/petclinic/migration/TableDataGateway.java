@@ -10,7 +10,6 @@ import org.springframework.samples.petclinic.visit.Visit;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -157,9 +156,4 @@ public class TableDataGateway {
     public ResultSet selectTable(String tableName){
         return db.select(String.format("SELECT * FROM %s", tableName));
     }
-
-	public void updateInconsistencies(Integer id, String tableName, String column, LocalDate birthDate) {
-		db.execute(String.format("UPDATE %s SET %s = '%s' WHERE id = %d", tableName, column, birthDate, id));
-		
-	}
 }
