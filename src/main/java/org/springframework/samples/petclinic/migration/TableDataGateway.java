@@ -142,5 +142,19 @@ public class TableDataGateway {
         db.execute(String.format("DELETE FROM %s WHERE id = %d", tableName, id));
     }
 
+    public ResultSet getOwnersByLastName(String lastName){
+        return db.select(String.format("SELECT * FROM owners WHERE last_name = '%s'", lastName));
+    }
 
+    public void updateInconsistencies(Integer id, String tableName, String column, String newValue){
+        db.execute(String.format("UPDATE %s SET %s = '%s' WHERE id = %d", tableName, column, newValue, id));
+    }
+
+    public void updateInconsistencies(Integer id, String tableName, String column, Integer newId){
+        db.execute(String.format("UPDATE %s SET %s = '%s' WHERE id = %d", tableName, column, newId, id));
+    }
+
+    public ResultSet selectTable(String tableName){
+        return db.select(String.format("SELECT * FROM %s", tableName));
+    }
 }

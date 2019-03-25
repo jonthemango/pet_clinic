@@ -18,6 +18,9 @@ package org.springframework.samples.petclinic.owner;
 import org.springframework.samples.petclinic.toggles.FeatureToggleManager;
 import org.springframework.samples.petclinic.migration.*;
 
+import org.springframework.samples.petclinic.migration.ConsistencyChecker;
+import org.springframework.samples.petclinic.migration.SqlDB;
+import org.springframework.samples.petclinic.migration.TableDataGateway;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,7 +32,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+import java.sql.ResultSet;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -41,11 +46,11 @@ import java.util.Map;
 @Controller
 public class OwnerController {
 
-    private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
-    private final OwnerRepository owners;
-    
     private SqlDB db;
     private TableDataGateway tdg;
+
+    private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
+    private final OwnerRepository owners;
        
 
 
@@ -66,7 +71,7 @@ public class OwnerController {
     }
 
     @PostMapping("/owners/new")
-    public String processCreationForm(@Valid Owner owner, BindingResult result) { 
+    public String processCreationForm(@Valid Owner owner, BindingResult result) {
         if (result.hasErrors()) {
             return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
         } else {
@@ -119,6 +124,11 @@ public class OwnerController {
 
         // find owners by last name
         Collection<Owner> results = this.owners.findByLastName(owner.getLastName());
+        db = new SQLiteDB();
+        tdg = new TableDataGateway(db);
+        ResultSet resultSet = this.tdg.getOwnersByLastName(owner.getLastName());
+        Iterator<Owner> oldIterator = results.iterator();
+
         if (results.isEmpty()) {
             // no owners found
             result.rejectValue("lastName", "notFound", "not found");
@@ -126,18 +136,52 @@ public class OwnerController {
         } else if (results.size() == 1) {
             // 1 owner found
             owner = results.iterator().next();
+            Integer expectedId = owner.getId();
+            try {
+                Integer actualId = resultSet.getInt("id");
+                if (!expectedId.equals(actualId)) {
+                    this.tdg.updateInconsistencies(actualId, "owners", "id", expectedId);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return "redirect:/owners/" + owner.getId();
         } else {
             // multiple owners found
             model.put("selections", results);
+            try {
+                while (oldIterator.hasNext() && resultSet.next()) {
+                    if (!oldIterator.next().getId().equals(resultSet.getInt("id"))) {
+                        this.tdg.updateInconsistencies(resultSet.getInt("id"), "owners", "id", oldIterator.next().getId());
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return "owners/ownersList";
         }
+
     }
 
     @GetMapping("/owners/{ownerId}/edit")
     public String initUpdateOwnerForm(@PathVariable("ownerId") int ownerId, Model model) {
         Owner owner = this.owners.findById(ownerId); // find owner to update
-        model.addAttribute(owner); 
+        model.addAttribute(owner);
+        db = new SQLiteDB();
+        tdg = new TableDataGateway(db);
+        ResultSet resultSet = this.tdg.getById(ownerId, "owners");
+        try {
+            String firstName = resultSet.getString("first_name");
+            String lastName = resultSet.getString("last_name");
+            String address = resultSet.getString("address");
+            String city = resultSet.getString("city");
+            String telephone = resultSet.getString("telephone");
+
+            checkAndUpdate(ownerId, owner, firstName, lastName, address, city, telephone);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
     }
 
@@ -161,8 +205,43 @@ public class OwnerController {
     @GetMapping("/owners/{ownerId}")
     public ModelAndView showOwner(@PathVariable("ownerId") int ownerId) {
         ModelAndView mav = new ModelAndView("owners/ownerDetails");
+
         mav.addObject(this.owners.findById(ownerId)); // find owner to display
+
+        db = new SQLiteDB();
+        tdg = new TableDataGateway(db);
+        ResultSet resultSet = this.tdg.getById(ownerId, "owners");
+        try {
+            String firstName = resultSet.getString("first_name");
+            String lastName = resultSet.getString("last_name");
+            String address = resultSet.getString("address");
+            String city = resultSet.getString("city");
+            String telephone = resultSet.getString("telephone");
+
+            checkAndUpdate(ownerId, this.owners.findById(ownerId), firstName, lastName, address, city, telephone);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return mav;
+    }
+
+    private void checkAndUpdate(Integer ownerId, Owner owner, String firstName, String lastName, String address, String city, String telephone) {
+        if (!owner.getFirstName().equals(firstName)) {
+            this.tdg.updateInconsistencies(ownerId, "owners", "first_name", owner.getFirstName());
+        }
+        if (!owner.getLastName().equals(lastName)) {
+            this.tdg.updateInconsistencies(ownerId, "owners", "last_name", owner.getLastName());
+        }
+        if (!owner.getAddress().equals(address)) {
+            this.tdg.updateInconsistencies(ownerId, "owners", "address", owner.getAddress());
+        }
+        if (!owner.getCity().equals(city)) {
+            this.tdg.updateInconsistencies(ownerId, "owners", "city", owner.getCity());
+        }
+        if (!owner.getTelephone().equals(telephone)) {
+            this.tdg.updateInconsistencies(ownerId, "owners", "telephone", owner.getTelephone());
+        }
     }
 
 }

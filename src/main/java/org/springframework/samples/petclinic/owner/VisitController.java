@@ -15,6 +15,7 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import org.springframework.samples.petclinic.migration.ConsistencyChecker;
 import org.springframework.samples.petclinic.migration.SQLiteDB;
 import org.springframework.samples.petclinic.migration.SqlDB;
 import org.springframework.samples.petclinic.migration.TableDataGateway;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.sql.ResultSet;
 import java.util.Map;
 
 /**
@@ -41,11 +43,10 @@ public class VisitController {
 
     private final VisitRepository visits;
     private final PetRepository pets;
-    
+
     private SqlDB db;
     private TableDataGateway tdg;
-       
-
+    private ConsistencyChecker cc;
 
     public VisitController(VisitRepository visits, PetRepository pets) {
         this.visits = visits;
@@ -75,6 +76,18 @@ public class VisitController {
     @ModelAttribute("visit")
     public Visit loadPetWithVisit(@PathVariable("petId") int petId, Map<String, Object> model) {
         Pet pet = this.pets.findById(petId);
+        ResultSet resultSet = this.tdg.getById(petId, "pets");
+        try {
+            String name = resultSet.getString("name");
+            String birthDate = resultSet.getString("birth_date");
+            String typeId = tdg.getPetType(resultSet.getInt("type_id"));
+            Integer ownerId = resultSet.getInt("owner_id");
+
+            checkAndUpdate(pet, petId, name, birthDate, typeId, ownerId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         model.put("pet", pet);
         Visit visit = new Visit();
         pet.addVisit(visit);
@@ -94,21 +107,36 @@ public class VisitController {
             return "pets/createOrUpdateVisitForm";
         } else {
             // insert into old db
-            this.visits.save(visit); 
+            this.visits.save(visit);
 
             // Check if feature toggle is on
             if(FeatureToggleManager.DO_RUN_CONSISTENCY_CHECKER)
-            {  
+            {
                 if(!FeatureToggleManager.DOING_MIGRATION_TEST){      
                 db = new SQLiteDB();
                 tdg = new TableDataGateway(db);
                 }
-                
+
                 // insert into new SQLite db
                 tdg.insertVisit(visit);
                 }
-            
+
             return "redirect:/owners/{ownerId}";
+        }
+    }
+
+    public void checkAndUpdate(Pet pet, Integer petId, String name, String birthDate, String typeId, Integer ownerId) {
+        if (!pet.getName().equals(name)) {
+            this.tdg.updateInconsistencies(petId, "pets", "name", pet.getName());
+        }
+        if (!pet.getBirthDate().toString().equals(birthDate)) {
+            this.tdg.updateInconsistencies(petId, "pets", "birth_date", pet.getBirthDate().toString());
+        }
+        if (!(pet.getType().toString().equals(typeId))) {
+            this.tdg.updateInconsistencies(petId, "pets", "type_id", pet.getType().toString());
+        }
+        if (!pet.getOwner().getId().equals(ownerId)) {
+            this.tdg.updateInconsistencies(petId, "pets", "owner_id", pet.getOwner().getId());
         }
     }
 

@@ -15,10 +15,17 @@
  */
 package org.springframework.samples.petclinic.vet;
 
+import org.springframework.samples.petclinic.migration.SQLiteDB;
+import org.springframework.samples.petclinic.migration.SqlDB;
+import org.springframework.samples.petclinic.migration.TableDataGateway;
+import org.springframework.samples.petclinic.owner.Owner;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.sql.ResultSet;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -30,6 +37,8 @@ import java.util.Map;
 @Controller
 class VetController {
 
+    private SqlDB db = new SQLiteDB();
+    private TableDataGateway tdg = new TableDataGateway(db);
     private final VetRepository vets;
 
     public VetController(VetRepository clinicService) {
@@ -42,6 +51,8 @@ class VetController {
         // objects so it is simpler for Object-Xml mapping
         Vets vets = new Vets();
         vets.getVetList().addAll(this.vets.findAll());
+        ResultSet resultSet = this.tdg.selectTable("vets");
+        shadowReadVets(resultSet);
         model.put("vets", vets);
         return "vets/vetList";
     }
@@ -52,7 +63,33 @@ class VetController {
         // objects so it is simpler for JSon/Object mapping
         Vets vets = new Vets();
         vets.getVetList().addAll(this.vets.findAll());
+        ResultSet resultSet = this.tdg.selectTable("vets");
+        shadowReadVets(resultSet);
         return vets;
+    }
+
+    private void shadowReadVets(ResultSet resultSet){
+        Collection<Vet> result = this.vets.findAll();
+        Iterator<Vet> oldIterator = result.iterator();
+        try {
+            System.out.println("going into try");
+            while(resultSet.next() && oldIterator.hasNext()){
+                String firstName = resultSet.getString("first_name");
+                String lastName = resultSet.getString("last_name");
+                Integer id = resultSet.getInt("id");
+                Vet nextVert = oldIterator.next();
+                if (!nextVert.getFirstName().equals(firstName)) {
+                    this.tdg.updateInconsistencies(id, "vets", "first_name", nextVert.getFirstName());
+                }
+                if (!nextVert.getLastName().equals(lastName)) {
+                    this.tdg.updateInconsistencies(id, "vets", "last_name", nextVert.getLastName());
+                }
+            }
+
+        } catch (Exception e) {
+            System.out.println("going into exception here sadly");
+            e.printStackTrace();
+        }
     }
 
 }
