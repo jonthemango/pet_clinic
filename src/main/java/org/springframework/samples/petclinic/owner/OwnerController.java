@@ -111,6 +111,8 @@ public class OwnerController {
     @GetMapping("/owners/find")
     public String initFindForm(Map<String, Object> model) {
         model.put("owner", new Owner());
+
+        if (FeatureToggleManager.DO_DISPLAY_LINK_TO_OWNER_LIST) return "owners/ownersFull.html";
         return "owners/findOwners";
     }
 

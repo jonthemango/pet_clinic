@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout (~{::body},'home')}">
+
+<body>
+
+<h2>Migrations Dashboard</h2>
+<a class="btn btn-default" th:href="@{/migrations}">Visit Migrations</a>
+<br>
+
+<table id="toggles" class="table table-striped">
+    <thead>
+    <tr>
+        <th style="width: 150px;">Name</th>
+        <th style="width: 200px;">Value</th>
+        <th style="width: 120px">Toggle Value</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="toggle : ${toggles}">
+        <td th:text="${toggle.name}"></td>
+        <td th:text="${toggle.value}"></td>
+        <td>
+            <a th:href="@{${'/toggles/' + toggle.name}}" th:text="Toggle"/></a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<div class="row">
+    <div class="col-md-12">
+        <pre>
+            <code th:text="${code}">
+
+            </code>
+        </pre>
+    </div>
+</div>
+
+</body>
+
+</html>
