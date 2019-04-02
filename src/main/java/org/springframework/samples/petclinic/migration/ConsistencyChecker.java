@@ -63,21 +63,16 @@ public class ConsistencyChecker {
         for (Vet vet : vetCollectionOld){
             
             int id = vet.getId();
-            System.out.print(id);
             ResultSet resultSet = this.tdg.getById(id, "vets");
             boolean isSame;
             String firstName;
             String lastName;           
             try{
                 firstName = resultSet.getString("first_name");
-                System.out.println(firstName);
                 lastName = resultSet.getString("last_name");
-                System.out.println(lastName);
                 isSame = vet.getFirstName().equals(firstName);
-                System.out.println(vet.getFirstName());
                 isSame = isSame && vet.getLastName().equals(lastName);
-                System.out.println(vet.getLastName());
-               
+
                 if (!isSame){
                     this.tdg.deleteById(resultSet.getInt("id"), "vets");
                     this.tdg.insertVet(vet);
@@ -103,7 +98,6 @@ public class ConsistencyChecker {
         for (Visit visit : visitCollectionOld) {
 
             int id = visit.getId();
-            System.out.print(id);
             ResultSet resultSet = this.tdg.getById(id, "visits");
             boolean isSame;
             int petID;
@@ -113,13 +107,11 @@ public class ConsistencyChecker {
             try {
                 petID = resultSet.getInt("pet_id");
                 date = resultSet.getString("visit_date");
-                System.out.println(date);
                 description = resultSet.getString("description");
                 
                 isSame = visit.getPetId().equals(petID) && visit.getDate().toString().equals(date) 
                                 && visit.getDescription().equals(description);
                 
-                System.out.println(visit.getDate().toString());
 
                 if (!isSame) {
                     this.tdg.deleteById(resultSet.getInt("id"), "visits");
@@ -169,14 +161,7 @@ public class ConsistencyChecker {
                                 && pet.getType().toString().equals(type)
                                 && pet.getOwner().getId().equals(ownerId);
                     
-                    System.out.println("Start of pet comparaison " + samePet);
-                    System.out.println(pet.getBirthDate().toString());
-                    System.out.println(birthDate);
-                    System.out.println(pet.getType());
-                    System.out.println(type);
-                    System.out.println(pet.getOwner().getId());
-                    System.out.println(ownerId);
-                    System.out.println("end of pet comparaison");
+
 
 
                     if(!samePet){
@@ -192,7 +177,6 @@ public class ConsistencyChecker {
             }
             
             int id = owner.getId();
-            System.out.print(id);
             ResultSet resultSet = this.tdg.getById(id, "owners");
             boolean isSame;
             String firstName;

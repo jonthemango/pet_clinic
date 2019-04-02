@@ -132,7 +132,6 @@ public class TableDataGateway {
     public ResultSet getById(Integer id, String tableName) {
         String sql; 
         sql = String.format("SELECT * FROM %s WHERE id = %d", tableName, id);
-        System.out.println(sql);
         ResultSet resultSet = db.select(sql);
         return resultSet;
     }

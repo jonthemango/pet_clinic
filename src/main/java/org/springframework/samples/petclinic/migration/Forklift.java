@@ -77,13 +77,10 @@ public class Forklift {
         for (String statement : initSchemaStatements){
             db.execute(statement);
         }
-        System.out.println("INIT SCHEMA COMPLETED.");
     }
 
     public void dropClinicTables(){
-        System.out.println("Dropping Tables:");
         for (String statement : dropTableStatements){
-            System.out.println("Drop: " + statement);
             db.execute(statement);
         }
     }

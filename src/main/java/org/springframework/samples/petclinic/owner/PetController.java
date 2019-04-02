@@ -84,7 +84,6 @@ public class PetController {
 
     @GetMapping("/pets/new")
     public String initCreationForm(Owner owner, ModelMap model) {
-        System.out.println("1");
         Pet pet = new Pet();
         owner.addPet(pet);
         model.put("pet", pet);
@@ -158,7 +157,6 @@ public class PetController {
             Collection<PetType> result = this.pets.findPetTypes();
             Iterator<PetType> oldIterator = result.iterator();
             try {
-                System.out.println("Shadow Read Pet Types");
                 while(resultSet.next() && oldIterator.hasNext()){
                     String name = resultSet.getString("name");
                     Integer id = resultSet.getInt("id");
@@ -172,7 +170,6 @@ public class PetController {
                 }
 
             } catch (Exception e) {
-                System.out.println("Shadow Read Pet Types Exception");
                 e.printStackTrace();
             }
         }
