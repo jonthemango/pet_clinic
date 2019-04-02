@@ -3,6 +3,7 @@ package org.springframework.samples.petclinic.migration;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import com.fasterxml.jackson.core.JsonParser;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.samples.petclinic.owner.Owner;
 import org.springframework.samples.petclinic.owner.OwnerController;
@@ -44,6 +45,7 @@ public class MigrationTest {
     @Before
     public void setup() {
         FeatureToggleManager.DOING_MIGRATION_TEST = true;
+        FeatureToggleManager.DO_RUN_CONSISTENCY_CHECKER = true;
         db = mock(SQLiteDB.class);
         tdg = mock(TableDataGateway.class);
         tempChecker = new ConsistencyChecker(db);
@@ -60,6 +62,7 @@ public class MigrationTest {
         Buddy = new Pet();
         Buddy.setId(TEST_PET_ID);
         Buddy.setName("hamster");
+
         //Buddy.setOwner(Robert);
         //given(this.pets.findPetTypes()).willReturn(Lists.newArrayList(Buddy));
         given(this.owners.findById(TEST_OWNER_ID)).willReturn(Robert);
@@ -68,11 +71,15 @@ public class MigrationTest {
         Visitation = new Visit();
         Visitation.setDescription("Quick Checkup");
         Visitation.setPetId(3);
+
+
     }
 
     @After
     public void afterTest(){
         FeatureToggleManager.DOING_MIGRATION_TEST = false;
+        FeatureToggleManager.DO_RUN_CONSISTENCY_CHECKER = false;
+        db.close();
     }
     
     @Test
@@ -91,7 +98,6 @@ public class MigrationTest {
 
         // verify that owner was saved to new database
         verify(tdg).insertOwner(Robert);
-        
     }
 
     @Test
@@ -115,7 +121,6 @@ public class MigrationTest {
 
         // assert that the pet being tested was added to the owner's pets
         assertEquals(Buddy.getOwner(), Robert);
-        
     }
     
     @Test
@@ -136,7 +141,6 @@ public class MigrationTest {
         // verify that owner was saved to new database
         verify(tdg).insertVisit(Visitation);
 
-        
     }
 
 
