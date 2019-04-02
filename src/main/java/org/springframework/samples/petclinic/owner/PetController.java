@@ -57,10 +57,13 @@ public class PetController {
 
     @ModelAttribute("types")
     public Collection<PetType> populatePetTypes() {
+
+
         db = new SQLiteDB();
         tdg = new TableDataGateway(db);
         ResultSet resultSet = this.tdg.selectTable("types");
         shadowReadPetTypes(resultSet);
+        db.close();
         return this.pets.findPetTypes();
     }
 
@@ -81,6 +84,7 @@ public class PetController {
 
     @GetMapping("/pets/new")
     public String initCreationForm(Owner owner, ModelMap model) {
+        System.out.println("1");
         Pet pet = new Pet();
         owner.addPet(pet);
         model.put("pet", pet);
@@ -150,25 +154,27 @@ public class PetController {
     }
 
     private void shadowReadPetTypes(ResultSet resultSet){
-        Collection<PetType> result = this.pets.findPetTypes();
-        Iterator<PetType> oldIterator = result.iterator();
-        try {
-            System.out.println("going into try");
-            while(resultSet.next() && oldIterator.hasNext()){
-                String name = resultSet.getString("name");
-                Integer id = resultSet.getInt("id");
-                PetType nextPetType = oldIterator.next();
-                if (!nextPetType.getName().equals(name)) {
-                    this.tdg.updateInconsistencies(id, "types", "name", nextPetType.getName());
+        if (FeatureToggleManager.DO_SHADOW_READ){
+            Collection<PetType> result = this.pets.findPetTypes();
+            Iterator<PetType> oldIterator = result.iterator();
+            try {
+                System.out.println("Shadow Read Pet Types");
+                while(resultSet.next() && oldIterator.hasNext()){
+                    String name = resultSet.getString("name");
+                    Integer id = resultSet.getInt("id");
+                    PetType nextPetType = oldIterator.next();
+                    if (!nextPetType.getName().equals(name)) {
+                        this.tdg.updateInconsistencies(id, "types", "name", nextPetType.getName());
+                    }
+                    if (!nextPetType.getId().equals(id)) {
+                        this.tdg.updateInconsistencies(id, "types", "id", nextPetType.getId());
+                    }
                 }
-                if (!nextPetType.getId().equals(id)) {
-                    this.tdg.updateInconsistencies(id, "types", "id", nextPetType.getId());
-                }
-            }
 
-        } catch (Exception e) {
-            System.out.println("going into exception here sadly");
-            e.printStackTrace();
+            } catch (Exception e) {
+                System.out.println("Shadow Read Pet Types Exception");
+                e.printStackTrace();
+            }
         }
     }
 

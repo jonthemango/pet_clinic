@@ -10,8 +10,9 @@ import java.util.List;
 public class FeatureToggleManager {
 
     public static boolean DO_DROP_TABLES_UPON_FORKLIFT = true;
-    public static boolean DO_RUN_CONSISTENCY_CHECKER = true;
+    public static boolean DO_RUN_CONSISTENCY_CHECKER = false;
 	public static boolean DOING_MIGRATION_TEST = false;
+	public static boolean DO_SHADOW_READ = false;
 
 	// Owner Toggles
     public static boolean DO_DISPLAY_LINK_TO_OWNER_LIST = true;

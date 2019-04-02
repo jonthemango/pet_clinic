@@ -58,6 +58,16 @@
                       <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
                       <span>Veterinarians</span>
                   </li>
+
+                  <li th:replace="::menuItem ('/migrations','migrations','migrations','refresh','Migrations')">
+                      <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+                      <span>Migrations</span>
+                  </li>
+
+                  <li th:replace="::menuItem ('/toggles','toggles','toggles','sunglasses','Toggles')">
+                      <span class="glyphicon glyphicon-sunglasses" aria-hidden="true"></span>
+                      <span>Feature Toggles</span>
+                  </li>
   
                   <li th:replace="::menuItem ('/oups','error','trigger a RuntimeException to see how it is handled','warning-sign','Error')">
                       <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>

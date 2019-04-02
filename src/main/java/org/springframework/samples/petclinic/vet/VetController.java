@@ -76,7 +76,6 @@ class VetController {
         Collection<Vet> result = this.vets.findAll();
         Iterator<Vet> oldIterator = result.iterator();
         try {
-            System.out.println("going into try");
             while(resultSet.next() && oldIterator.hasNext()){
                 String firstName = resultSet.getString("first_name");
                 String lastName = resultSet.getString("last_name");
@@ -91,7 +90,6 @@ class VetController {
             }
 
         } catch (Exception e) {
-            System.out.println("going into exception here sadly");
             e.printStackTrace();
         }
     }

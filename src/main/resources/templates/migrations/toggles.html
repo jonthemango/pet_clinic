@@ -7,7 +7,7 @@
 <h2>Migrations Dashboard</h2>
 <a class="btn btn-default" th:href="@{/migrations}">Visit Migrations</a>
 <br>
-
+<br>
 <table id="toggles" class="table table-striped">
     <thead>
     <tr>
@@ -21,7 +21,7 @@
         <td th:text="${toggle.name}"></td>
         <td th:text="${toggle.value}"></td>
         <td>
-            <a th:href="@{${'/toggles/' + toggle.name}}" th:text="Toggle"/></a>
+            <a class="btn btn-default" th:href="@{${'/toggles/' + toggle.name}}" th:text="Toggle"/></a>
         </td>
     </tr>
     </tbody>
