@@ -16,5 +16,6 @@ public class AbTester {
         ABTestingLogger.log("test","value", "a");
 
         FeatureToggleManager.DO_REDIRECT_TO_NEW_PET_PAGE_AFTER_OWNER_CREATION = true;
+        FeatureToggleManager.DO_REDIRECT_TO_NEW_PET_PAGE_AFTER_OWNER_CREATION = false;
     }
 }
