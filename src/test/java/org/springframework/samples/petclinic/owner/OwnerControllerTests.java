@@ -56,17 +56,17 @@ public class OwnerControllerTests {
         given(this.owners.findById(TEST_OWNER_ID)).willReturn(george);
     }
 
-    @Test
     @Ignore
+    @Test
     public void testInitCreationForm() throws Exception {
         mockMvc.perform(get("/owners/new"))
             .andExpect(status().isOk())
             .andExpect(model().attributeExists("owner"))
             .andExpect(view().name("owners/createOrUpdateOwnerForm"));
     }
-
-    @Test
+    
     @Ignore
+    @Test
     public void testProcessCreationFormSuccess() throws Exception {
         mockMvc.perform(post("/owners/new")
             .param("firstName", "Joe")

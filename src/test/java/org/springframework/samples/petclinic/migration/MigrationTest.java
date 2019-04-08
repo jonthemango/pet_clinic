@@ -82,9 +82,9 @@ public class MigrationTest {
         FeatureToggleManager.DO_RUN_CONSISTENCY_CHECKER = false;
         db.close();
     }
-    
-    @Test
+
     @Ignore
+    @Test
     public void testOwnerMigration() {
         owners = mock(OwnerRepository.class);
     	OwnerController controller = new OwnerController(owners);
@@ -102,8 +102,8 @@ public class MigrationTest {
         verify(tdg).insertOwner(Robert);
     }
 
-    @Test
     @Ignore
+    @Test
     public void testPetMigration() {
         pets = mock(PetRepository.class);
         //owners = mock(OwnerRepository.class);
