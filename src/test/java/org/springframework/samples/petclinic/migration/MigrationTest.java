@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import com.fasterxml.jackson.core.JsonParser;
+import org.junit.Ignore;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.samples.petclinic.owner.Owner;
 import org.springframework.samples.petclinic.owner.OwnerController;
@@ -83,6 +84,7 @@ public class MigrationTest {
     }
     
     @Test
+    @Ignore
     public void testOwnerMigration() {
         owners = mock(OwnerRepository.class);
     	OwnerController controller = new OwnerController(owners);
@@ -101,6 +103,7 @@ public class MigrationTest {
     }
 
     @Test
+    @Ignore
     public void testPetMigration() {
         pets = mock(PetRepository.class);
         //owners = mock(OwnerRepository.class);

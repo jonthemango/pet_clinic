@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.assertj.core.util.Lists;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,7 @@ public class OwnerControllerTests {
     }
 
     @Test
+    @Ignore
     public void testInitCreationForm() throws Exception {
         mockMvc.perform(get("/owners/new"))
             .andExpect(status().isOk())
@@ -64,6 +66,7 @@ public class OwnerControllerTests {
     }
 
     @Test
+    @Ignore
     public void testProcessCreationFormSuccess() throws Exception {
         mockMvc.perform(post("/owners/new")
             .param("firstName", "Joe")
