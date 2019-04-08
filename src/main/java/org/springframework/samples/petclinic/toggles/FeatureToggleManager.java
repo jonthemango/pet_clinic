@@ -1,6 +1,7 @@
 package org.springframework.samples.petclinic.toggles;
 
 
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class FeatureToggleManager {
         List<Toggle> toggles = new ArrayList<Toggle>();
         Field[] allFields = FeatureToggleManager.class.getDeclaredFields();
         for (Field field : allFields) {
-            if (field.getType() != Boolean.class) continue;
+            if (field.getType().toString() == "boolean") continue;
 
             // if field is static
             if (java.lang.reflect.Modifier.isStatic(field.getModifiers()) ){
