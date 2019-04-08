@@ -19,7 +19,7 @@ public class FeatureToggleManager {
 
 
     // Gets all toggles using Java Reflection
-    public static List getToggles() throws IllegalAccessException {
+    public static List<Toggle> getToggles() throws IllegalAccessException {
         List<Toggle> toggles = new ArrayList<Toggle>();
         Field[] allFields = FeatureToggleManager.class.getDeclaredFields();
         for (Field field : allFields) {
