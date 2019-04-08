@@ -17,7 +17,8 @@ public class ABTestingLogger {
      * @param logName Name of thing being logged
      * @param object Log any object needed
      * @param a_or_b Use the string "a" or the string "b" to denote the two classifications of experiment
-     * @return Example JSONObject return value{
+     * @return Example JSONObject return value
+     * {
      *     "a_or_b": "a",
      *     "logName": "logName",
      *     "toggles": {
@@ -33,7 +34,7 @@ public class ABTestingLogger {
      */
     public static JSONObject log(String logName, Object object, String  a_or_b){
         // Get current time
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
 
         // Add keys to the JSON object

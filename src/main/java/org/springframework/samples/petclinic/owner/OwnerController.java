@@ -15,6 +15,7 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import org.springframework.samples.petclinic.toggles.ABTestingLogger;
 import org.springframework.samples.petclinic.toggles.FeatureToggleManager;
 import org.springframework.samples.petclinic.migration.*;
 
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
+
 
 import javax.validation.Valid;
 import java.sql.ResultSet;
@@ -51,11 +53,9 @@ public class OwnerController {
 
     private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
     private final OwnerRepository owners;
-       
 
-
-    public OwnerController(OwnerRepository clinicService) {
-        this.owners = clinicService;
+    public OwnerController(OwnerRepository owners) {
+        this.owners = owners;
     }
 
     @InitBinder
@@ -65,6 +65,12 @@ public class OwnerController {
 
     @GetMapping("/owners/new")
     public String initCreationForm(Map<String, Object> model) {
+        if (FeatureToggleManager.DO_REDIRECT_TO_NEW_PET_PAGE_AFTER_OWNER_CREATION) {
+            ABTestingLogger.log("Owner being created", "", "b");
+        }
+        else {
+            ABTestingLogger.log("Owner being created", "", "a");
+        }
         Owner owner = new Owner();
         model.put("owner", owner);
         return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
@@ -91,17 +97,17 @@ public class OwnerController {
                 tdg.insertOwner(owner);
             }
 
-            /*
-            Previously, this was used for shadow writes...
-                db = new SQLiteDB();
-                ConsistencyChecker TempChecker = new ConsistencyChecker(db);
-                TempChecker.connectRepos(null, owners, null, null);
-                TempChecker.ownersChecker();
-            */
-
-            return "redirect:/owners/" + owner.getId();
+            if (FeatureToggleManager.DO_REDIRECT_TO_NEW_PET_PAGE_AFTER_OWNER_CREATION) {
+                ABTestingLogger.log("Owner created", owner, "b");
+                return "redirect:/owners/" + owner.getId() + "/pets/new";
+            }
+            else {
+                ABTestingLogger.log("Owner created", owner, "a");
+                return "redirect:/owners/" + owner.getId();
+            }
         }
     }
+
     // To mock DB's
     public void setDbForTest(SqlDB db, TableDataGateway tdg) {
         this.db = db;

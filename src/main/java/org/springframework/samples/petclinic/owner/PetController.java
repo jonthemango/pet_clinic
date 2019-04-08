@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package org.springframework.samples.petclinic.owner;
+
+import org.springframework.samples.petclinic.toggles.ABTestingLogger;
 import org.springframework.samples.petclinic.toggles.FeatureToggleManager;
 import org.springframework.samples.petclinic.migration.*;
 
@@ -84,6 +86,12 @@ public class PetController {
 
     @GetMapping("/pets/new")
     public String initCreationForm(Owner owner, ModelMap model) {
+        if (FeatureToggleManager.DO_REDIRECT_TO_NEW_PET_PAGE_AFTER_OWNER_CREATION) {
+            ABTestingLogger.log("Pet being created", "", "b");
+        }
+        else {
+            ABTestingLogger.log("Pet being created", "", "a");
+        }
         Pet pet = new Pet();
         owner.addPet(pet);
         model.put("pet", pet);
@@ -115,6 +123,15 @@ public class PetController {
                 tdg.insertPet(pet);
 
             }
+
+            if (FeatureToggleManager.DO_REDIRECT_TO_NEW_PET_PAGE_AFTER_OWNER_CREATION) {
+                ABTestingLogger.log("Pet created", pet, "b");
+            }
+            else {
+                ABTestingLogger.log("Pet created", pet, "a");
+            }
+
+
             return "redirect:/owners/{ownerId}";
         }
     }

@@ -18,6 +18,7 @@ package org.springframework.samples.petclinic;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.samples.petclinic.toggles.ABTestingLogger;
 
 /**
  * PetClinic Spring Boot Application.
@@ -29,6 +30,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class PetClinicApplication {
 
     public static void main(String[] args) {
+        ABTestingLogger.resetLogger();
         SpringApplication.run(PetClinicApplication.class, args);
     }
 

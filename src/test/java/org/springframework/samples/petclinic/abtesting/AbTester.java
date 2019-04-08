@@ -9,6 +9,9 @@ public class AbTester {
 
     @Test
     public void test() {
+        // interact with db 
+
+        
         ABTestingLogger.log("test","value", "a");
     }
 }
