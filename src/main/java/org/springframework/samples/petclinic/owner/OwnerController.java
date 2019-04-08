@@ -98,11 +98,11 @@ public class OwnerController {
             }
 
             if (FeatureToggleManager.DO_REDIRECT_TO_NEW_PET_PAGE_AFTER_OWNER_CREATION) {
-                ABTestingLogger.log("Owner created", owner, "b");
+                ABTestingLogger.log("Owner created", "", "b");
                 return "redirect:/owners/" + owner.getId() + "/pets/new";
             }
             else {
-                ABTestingLogger.log("Owner created", owner, "a");
+                ABTestingLogger.log("Owner created", "", "a");
                 return "redirect:/owners/" + owner.getId();
             }
         }

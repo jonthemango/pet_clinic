@@ -19,6 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.samples.petclinic.owner.Owner;
 import org.springframework.samples.petclinic.owner.OwnerController;
 import org.springframework.samples.petclinic.owner.OwnerRepository;
+import org.springframework.samples.petclinic.toggles.FeatureToggleManager;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -43,6 +44,7 @@ public class OwnerControllerTests {
 
     @Before
     public void setup() {
+        FeatureToggleManager.DO_REDIRECT_TO_NEW_PET_PAGE_AFTER_OWNER_CREATION = false;
         george = new Owner();
         george.setId(TEST_OWNER_ID);
         george.setFirstName("George");

@@ -48,6 +48,7 @@ public class SQLiteDB  implements SqlDB {
     public void execute(String sql){
         try{
             this.statement = conn.createStatement();
+            System.out.println(sql);
             statement.execute(sql);
         } catch (Exception e){
             e.printStackTrace();
