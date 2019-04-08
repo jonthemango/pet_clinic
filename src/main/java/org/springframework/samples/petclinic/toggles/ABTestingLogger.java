@@ -53,6 +53,7 @@ public class ABTestingLogger {
             }
             obj.put("toggles", toggleObj);
         } catch (IllegalAccessException e) {
+            System.out.print("ERROR: Toggle object failed.");
             e.printStackTrace();
         }
 

@@ -24,8 +24,10 @@ public class FeatureToggleManager {
         List<Toggle> toggles = new ArrayList<Toggle>();
         Field[] allFields = FeatureToggleManager.class.getDeclaredFields();
         for (Field field : allFields) {
+            if (field.getType() != Boolean.class) continue;
+
             // if field is static
-            if (java.lang.reflect.Modifier.isStatic(field.getModifiers())){
+            if (java.lang.reflect.Modifier.isStatic(field.getModifiers()) ){
                 toggles.add(new Toggle(field.getName(), field.getBoolean(null)));
             }
         }

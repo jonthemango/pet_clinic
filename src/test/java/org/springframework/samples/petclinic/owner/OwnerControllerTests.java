@@ -55,7 +55,6 @@ public class OwnerControllerTests {
         given(this.owners.findById(TEST_OWNER_ID)).willReturn(george);
     }
 
-    @Ignore
     @Test
     public void testInitCreationForm() throws Exception {
         mockMvc.perform(get("/owners/new"))
