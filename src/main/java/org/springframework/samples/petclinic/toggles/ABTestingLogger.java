@@ -12,6 +12,25 @@ public class ABTestingLogger {
 
     private static String dbName = "a_b_testing.db";
 
+    /***
+     *
+     * @param logName Name of thing being logged
+     * @param object Log any object needed
+     * @param a_or_b Use the string "a" or the string "b" to denote the two classifications of experiment
+     * @return Example JSONObject return value{
+     *     "a_or_b": "a",
+     *     "logName": "logName",
+     *     "toggles": {
+     *         "DO_RUN_CONSISTENCY_CHECKER": false,
+     *         "DO_DROP_TABLES_UPON_FORKLIFT": true,
+     *         "DO_SHADOW_READ": false,
+     *         "DO_DISPLAY_LINK_TO_OWNER_LIST": true,
+     *         "DOING_MIGRATION_TEST": false
+     *     },
+     *     "time": "2019/04/07 22:19:01",
+     *     "object": "value"
+     * }
+     */
     public static JSONObject log(String logName, Object object, String  a_or_b){
         // Get current time
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
