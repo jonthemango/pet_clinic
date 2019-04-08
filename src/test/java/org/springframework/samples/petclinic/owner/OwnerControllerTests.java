@@ -5,9 +5,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.assertj.core.util.Lists;
 import org.junit.Before;
@@ -20,6 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.samples.petclinic.owner.Owner;
 import org.springframework.samples.petclinic.owner.OwnerController;
 import org.springframework.samples.petclinic.owner.OwnerRepository;
+import org.springframework.samples.petclinic.toggles.ABTestingLogger;
 import org.springframework.samples.petclinic.toggles.FeatureToggleManager;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -65,7 +64,7 @@ public class OwnerControllerTests {
             .andExpect(view().name("owners/createOrUpdateOwnerForm"));
     }
     
-    @Ignore
+
     @Test
     public void testProcessCreationFormSuccess() throws Exception {
         mockMvc.perform(post("/owners/new")
@@ -179,6 +178,66 @@ public class OwnerControllerTests {
             .andExpect(model().attribute("owner", hasProperty("city", is("Madison"))))
             .andExpect(model().attribute("owner", hasProperty("telephone", is("6085551023"))))
             .andExpect(view().name("owners/ownerDetails"));
+    }
+
+    @Test
+    public void DO_REDIRECT_TO_NEW_PET_PAGE_AFTER_OWNER_CREATION() throws Exception {
+        // Reset logs
+        ABTestingLogger.resetLogger();
+
+        // Use Feature A
+        FeatureToggleManager.DO_REDIRECT_TO_NEW_PET_PAGE_AFTER_OWNER_CREATION = false;
+
+        // Execute experiment A
+        this.experimentA();
+
+        // Use Feature B
+        FeatureToggleManager.DO_REDIRECT_TO_NEW_PET_PAGE_AFTER_OWNER_CREATION = true;
+
+        // Execute experiment B
+        this.experimentB();
+
+        // Rollback Feature back to A
+        FeatureToggleManager.DO_REDIRECT_TO_NEW_PET_PAGE_AFTER_OWNER_CREATION = false;
+
+        // Show that feature can be rolled back to experiment A
+        this.experimentA();
+    }
+
+    public void experimentA() throws Exception{
+        // Log start of experiment A
+        ABTestingLogger.log("Experiment A Start", "", "a");
+
+        // Make post request on /owners/new and check redirect occurs to owner page
+        mockMvc.perform(post("/owners/new")
+            .param("firstName", "Joe")
+            .param("lastName", "Bloggs")
+            .param("address", "123 Caramel Street")
+            .param("city", "London")
+            .param("telephone", "01316761638"))
+            .andExpect(status().is(302))
+            .andExpect(redirectedUrl("/owners/null"));
+
+        // End experiment A
+        ABTestingLogger.log("Experiment A End", "", "a");
+    }
+
+    public void experimentB() throws Exception{
+        // Start experiment B
+        ABTestingLogger.log("Experiment B Start", "", "b");
+
+        // Make post request on /owners/new and check redirect occurs to pet form page
+        mockMvc.perform(post("/owners/new")
+            .param("firstName", "Joe")
+            .param("lastName", "Bloggs")
+            .param("address", "123 Caramel Street")
+            .param("city", "London")
+            .param("telephone", "01316761638"))
+            .andExpect(status().is(302))
+            .andExpect(redirectedUrl("/owners/null/pets/new"));
+
+        // End experiment B
+        ABTestingLogger.log("Experiment B End", "", "b");
     }
 
 }

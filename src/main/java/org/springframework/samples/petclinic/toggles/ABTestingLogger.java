@@ -32,7 +32,7 @@ public class ABTestingLogger {
      *     "object": "value"
      * }
      */
-    public static JSONObject log(String logName, Object object, String  a_or_b){
+    public static JSONObject log(String logName, Object object, String a_or_b){
         // Get current time
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
