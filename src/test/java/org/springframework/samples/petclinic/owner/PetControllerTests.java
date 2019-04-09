@@ -1,5 +1,7 @@
 package org.springframework.samples.petclinic.owner;
 
+
+
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -25,6 +27,10 @@ import org.springframework.samples.petclinic.owner.PetType;
 import org.springframework.samples.petclinic.owner.PetTypeFormatter;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.samples.petclinic.toggles.FeatureToggleManager;
+import org.springframework.samples.petclinic.toggles.ABTestingLogger;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Test class for the {@link PetController}
@@ -125,5 +131,77 @@ public class PetControllerTests {
             .andExpect(status().isOk())
             .andExpect(view().name("pets/createOrUpdatePetForm"));
     }
+
+    @Test
+    public void DO_REDIRECT_TO_NEW_VISIT_PAGE_AFTER_PET_CREATION() throws Exception {
+        // Reset logs
+        ABTestingLogger.resetLogger();
+
+        // Use Feature A
+        FeatureToggleManager.DO_REDIRECT_TO_NEW_VISIT_PAGE_AFTER_PET_CREATION = false;
+
+        // Execute experiment A
+        this.experimentA();
+
+        // Use Feature B
+        FeatureToggleManager.DO_REDIRECT_TO_NEW_VISIT_PAGE_AFTER_PET_CREATION = true;
+
+        // Execute experiment B
+    /*    this.experimentB();*/
+
+        // Rollback Feature back to A
+        FeatureToggleManager.DO_REDIRECT_TO_NEW_VISIT_PAGE_AFTER_PET_CREATION = false;
+
+        // Show that feature can be rolled back to experiment A
+        this.experimentA();
+    }
+
+
+    
+    public void experimentA() throws Exception{
+        // Log start of experiment A
+        ABTestingLogger.log("Experiment A Start", "", "a");
+
+         // Make post request on /owners/new and check redirect occurs to owner page
+         mockMvc.perform(post("/owners/new")
+         .param("firstName", "Joe")
+         .param("lastName", "Bloggs")
+         .param("address", "123 Caramel Street")
+         .param("city", "London")
+         .param("telephone", "01316761638"));
+
+         mockMvc.perform(post("/owners/null/pets/new", TEST_OWNER_ID)
+            .param("name", "Betty")
+            .param("type", "hamster")
+            .param("birthDate", "2015-02-12")
+        )
+            .andExpect(status().is3xxRedirection())
+            .andExpect(view().name("redirect:/owners/{ownerId}"));
+
+         
+        // End experiment A
+        ABTestingLogger.log("Experiment A End", "", "a");
+    }
+    
+/*
+    public void experimentB() throws Exception{
+        // Start experiment B
+        ABTestingLogger.log("Experiment B Start", "", "b");
+
+        // Make post request on /owners/new and check redirect occurs to pet form page
+        mockMvc.perform(post("/owners/new")
+            .param("firstName", "Joe")
+            .param("lastName", "Bloggs")
+            .param("address", "123 Caramel Street")
+            .param("city", "London")
+            .param("telephone", "01316761638"))
+            .andExpect(status().is(302))
+            .andExpect(redirectedUrl("/owners/null/pets/new"));
+
+        // End experiment B
+        ABTestingLogger.log("Experiment B End", "", "b");
+    }
+*/
+
 
 }
