@@ -15,6 +15,9 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import org.springframework.samples.petclinic.toggles.ABTestingLogger;
+import org.springframework.samples.petclinic.toggles.FeatureToggleManager;
+
 import org.springframework.samples.petclinic.migration.ConsistencyChecker;
 import org.springframework.samples.petclinic.migration.SQLiteDB;
 import org.springframework.samples.petclinic.migration.SqlDB;
@@ -99,6 +102,13 @@ public class VisitController {
     // Spring MVC calls method loadPetWithVisit(...) before initNewVisitForm is called
     @GetMapping("/owners/*/pets/{petId}/visits/new")
     public String initNewVisitForm(@PathVariable("petId") int petId, Map<String, Object> model) {
+
+        if (FeatureToggleManager.DO_REDIRECT_TO_NEW_VISIT_PAGE_AFTER_PET_CREATION) {
+            ABTestingLogger.log("Visit being created", "", "b");
+        }
+        else {
+            ABTestingLogger.log("Visit being created", "", "a");
+        }
         return "pets/createOrUpdateVisitForm";
     }
 
