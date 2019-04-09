@@ -1,4 +1,5 @@
 <!doctype html>
+
 <html th:fragment="layout (template, menu)">
 
   <head>
@@ -22,6 +23,7 @@
   </head>
 
 <body>
+  
 
   <nav class="navbar navbar-default" role="navigation">
       <div class="container">
@@ -48,12 +50,14 @@
                       <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
                       <span>Home</span>
                   </li>
-  
+                  
+                  
                   <li th:replace="::menuItem ('/owners/find','owners','find owners','search','Find owners')">
                       <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                       <span>Find owners</span>
                   </li>
-  
+                
+            
                   <li th:replace="::menuItem ('/vets.html','vets','veterinarians','th-list','Veterinarians')">
                       <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
                       <span>Veterinarians</span>

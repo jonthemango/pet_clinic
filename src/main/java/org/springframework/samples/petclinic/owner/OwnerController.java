@@ -17,6 +17,7 @@ package org.springframework.samples.petclinic.owner;
 
 import org.springframework.samples.petclinic.toggles.ABTestingLogger;
 import org.springframework.samples.petclinic.toggles.FeatureToggleManager;
+import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.samples.petclinic.migration.*;
 
 import org.springframework.samples.petclinic.migration.ConsistencyChecker;
@@ -25,6 +26,9 @@ import org.springframework.samples.petclinic.migration.TableDataGateway;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -34,9 +38,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 
 import javax.validation.Valid;
+
+import java.beans.PropertyEditor;
 import java.sql.ResultSet;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -115,16 +122,76 @@ public class OwnerController {
         this.tdg = tdg;
     }
 
+
     @GetMapping("/owners/find")
-    public String initFindForm(Map<String, Object> model) {
+    public String initFindForm(Owner owner, BindingResult result,Map<String, Object> model) {
+
+    if(FeatureToggleManager.DO_REDIRECT_TO_VIEW_OWNERS_AFTER_CLICKING_FIND_OWNERS){
+        
+        // allow parameterless GET request for /owners to return all records
+        if (owner.getLastName() == null) {
+            owner.setLastName(""); // empty string signifies broadest possible search
+        }
+
+        // find owners by last name
+        Collection<Owner> results = this.owners.findByLastName(owner.getLastName());
+        db = new SQLiteDB();
+        tdg = new TableDataGateway(db);
+        ResultSet resultSet = this.tdg.getOwnersByLastName(owner.getLastName());
+        Iterator<Owner> oldIterator = results.iterator();
+
+        if (results.isEmpty()) {
+            // no owners found
+            result.rejectValue("lastName", "notFound", "not found");
+            return "owners/findOwners";
+        } else if (results.size() == 1) {
+            // 1 owner found
+            owner = results.iterator().next();
+            Integer expectedId = owner.getId();
+            try {
+                Integer actualId = resultSet.getInt("id");
+                if (!expectedId.equals(actualId)) {
+                    this.tdg.updateInconsistencies(actualId, "owners", "id", expectedId);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return "redirect:/owners/" + owner.getId();
+        } else {
+            // multiple owners found
+            model.put("selections", results);
+            try {
+                while (oldIterator.hasNext() && resultSet.next()) {
+                    if (!oldIterator.next().getId().equals(resultSet.getInt("id"))) {
+                        this.tdg.updateInconsistencies(resultSet.getInt("id"), "owners", "id", oldIterator.next().getId());
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return "owners/ownersList";
+        }
+   
+        
+    }else{
+        model.put("owner", new Owner());
+        model.put("DO_DISPLAY_LINK_TO_OWNER_LIST", FeatureToggleManager.DO_DISPLAY_LINK_TO_OWNER_LIST);
+        return "owners/findOwners";
+    }
+    
+    }
+
+    @GetMapping("/owners/finds")
+    public String initFindForm(Map<String,Object>model){
         model.put("owner", new Owner());
         model.put("DO_DISPLAY_LINK_TO_OWNER_LIST", FeatureToggleManager.DO_DISPLAY_LINK_TO_OWNER_LIST);
         return "owners/findOwners";
     }
 
+
+    
     @GetMapping("/owners")
     public String processFindForm(Owner owner, BindingResult result, Map<String, Object> model) {
-
         // allow parameterless GET request for /owners to return all records
         if (owner.getLastName() == null) {
             owner.setLastName(""); // empty string signifies broadest possible search
