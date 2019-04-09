@@ -15,6 +15,7 @@ public class FeatureToggleManager {
 	public static boolean DOING_MIGRATION_TEST = false;
     public static boolean DO_SHADOW_READ = false;
     public static boolean DO_REDIRECT_TO_NEW_PET_PAGE_AFTER_OWNER_CREATION = false;
+    public static boolean DO_REDIRECT_TO_NEW_VISIT_PAGE_AFTER_PET_CREATION = false;
 
 	// Owner Toggles
     public static boolean DO_DISPLAY_LINK_TO_OWNER_LIST = true;

@@ -127,6 +127,8 @@ public class VisitController {
         }
     }
 
+    
+
     public void checkAndUpdate(Pet pet, Integer petId, String name, String birthDate, String typeId, Integer ownerId) {
         if (!pet.getName().equals(name)) {
             this.tdg.updateInconsistencies(petId, "pets", "name", pet.getName());

@@ -88,10 +88,14 @@ public class PetController {
     public String initCreationForm(Owner owner, ModelMap model) {
         if (FeatureToggleManager.DO_REDIRECT_TO_NEW_PET_PAGE_AFTER_OWNER_CREATION) {
             ABTestingLogger.log("Pet being created", "", "b");
-        }
+        } 
+        else if (FeatureToggleManager.DO_REDIRECT_TO_NEW_VISIT_PAGE_AFTER_PET_CREATION) {
+            ABTestingLogger.log("Pet being created", "", "b");
+        } 
         else {
             ABTestingLogger.log("Pet being created", "", "a");
         }
+
         Pet pet = new Pet();
         owner.addPet(pet);
         model.put("pet", pet);
@@ -118,21 +122,26 @@ public class PetController {
                     db = new SQLiteDB();
                     tdg = new TableDataGateway(db);
                 }
-
             	// insert into new SQLite db
                 tdg.insertPet(pet);
-
             }
 
             if (FeatureToggleManager.DO_REDIRECT_TO_NEW_PET_PAGE_AFTER_OWNER_CREATION) {
                 ABTestingLogger.log("Pet created", pet, "b");
+               
             }
+           
+            else if (FeatureToggleManager.DO_REDIRECT_TO_NEW_VISIT_PAGE_AFTER_PET_CREATION) {
+                ABTestingLogger.log("Pet being created", "", "b");
+                return "redirect:/owners/{ownerId}/pets/"+pet.getId()+"/visits/new";
+            } 
             else {
-                ABTestingLogger.log("Pet created", pet, "a");
+                ABTestingLogger.log("Pet being created", "", "a");
+                return "redirect:/owners/{ownerId}";
             }
-
 
             return "redirect:/owners/{ownerId}";
+
         }
     }
 
