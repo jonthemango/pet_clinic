@@ -69,6 +69,42 @@ public class ABTestingLogger {
         return obj;
     }
 
+    public static JSONObject logNoObject(String logName, String a_or_b){
+        // Get current time
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+
+        // Add keys to the JSON object
+        JSONObject obj = new JSONObject();
+        obj.put("logName", logName);
+        obj.put("time",dtf.format(now));
+        obj.put("a_or_b", a_or_b);
+
+        // Add current state of feature toggles to JSON object
+        try {
+            List<Toggle> toggles = FeatureToggleManager.getToggles();
+            JSONObject toggleObj = new JSONObject();
+            for (Toggle toggle : toggles){
+                toggleObj.put(toggle.name, toggle.value);
+            }
+            obj.put("toggles", toggleObj);
+        } catch (IllegalAccessException e) {
+            System.out.print("ERROR: Toggle object failed.");
+            e.printStackTrace();
+        }
+
+        // Print it
+        System.out.println(obj.toString());
+
+        // Save it
+        SqlDB db = new SQLiteDB(dbName);
+        db.execute("CREATE TABLE IF NOT EXISTS `logs` ( `id` INTEGER PRIMARY KEY AUTOINCREMENT, `log` TEXT)");
+        db.execute(String.format("INSERT INTO `logs` ( log ) VALUES ('%s')", obj.toString()));
+        db.close();
+
+        return obj;
+    }
+
     public static void resetLogger(){
         // Drop logs
         SqlDB db = new SQLiteDB(dbName);

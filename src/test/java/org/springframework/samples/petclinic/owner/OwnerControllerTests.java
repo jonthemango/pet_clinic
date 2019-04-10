@@ -45,6 +45,7 @@ public class OwnerControllerTests {
     @Before
     public void setup() {
         FeatureToggleManager.DO_REDIRECT_TO_NEW_PET_PAGE_AFTER_OWNER_CREATION = false;
+        
         george = new Owner();
         george.setId(TEST_OWNER_ID);
         george.setFirstName("George");
@@ -239,5 +240,60 @@ public class OwnerControllerTests {
         // End experiment B
         ABTestingLogger.log("Experiment B End", "", "b");
     }
+
+
+    @Test
+    public void DO_REDIRECT_TO_VIEW_OWNERS_AFTER_CLICKING_FIND_OWNERS() throws Exception {
+        
+        // Reset logs
+        ABTestingLogger.resetLogger();
+
+        // Use Feature A
+        FeatureToggleManager.DO_REDIRECT_TO_VIEW_OWNERS_AFTER_CLICKING_FIND_OWNERS = false;
+
+        // Execute experiment A
+        this.experimentA_Click_Find_Owner();
+
+        // Use Feature B
+        FeatureToggleManager.DO_REDIRECT_TO_VIEW_OWNERS_AFTER_CLICKING_FIND_OWNERS = true;
+         
+        // Execute experiment B
+        this.experimentB_Click_Find_Owner();
+
+        // Rollback Feature back to A
+        FeatureToggleManager.DO_REDIRECT_TO_VIEW_OWNERS_AFTER_CLICKING_FIND_OWNERS = false;
+
+        // Show that feature can be rolled back to experiment A
+        this.experimentA_Click_Find_Owner();
+    }
+
+
+
+    public void experimentA_Click_Find_Owner()throws Exception{
+
+        ABTestingLogger.log("Experiment A for Click Find Owner Start", "", "b");
+        mockMvc.perform(get("/owners/find"))
+        .andExpect(status().isOk())
+        .andExpect(model().attributeExists("owner"))
+        .andExpect(view().name("owners/findOwners"));
+        ABTestingLogger.log("Experiment A for Click Find Owner End", "", "b");
+
+    }
+
+    public void experimentB_Click_Find_Owner()throws Exception{
+        ABTestingLogger.log("Experiment B for Click Find Owner Start", "", "b");
+        OwnerController.SYSTEM_UNDER_TEST = true;   
+        mockMvc.perform(get("/owners/find"))
+        .andExpect(status().isOk())
+        .andExpect(model().attributeExists("owner"))
+        .andExpect(view().name("owners/ownersList"));
+        OwnerController.SYSTEM_UNDER_TEST = false;   
+        ABTestingLogger.log("Experiment B for Click Find Owner End", "", "b");
+
+    }
+
+
+
+
 
 }

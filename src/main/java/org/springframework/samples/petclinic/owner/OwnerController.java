@@ -61,6 +61,8 @@ public class OwnerController {
     private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
     private final OwnerRepository owners;
 
+    public static boolean SYSTEM_UNDER_TEST = false;
+
     public OwnerController(OwnerRepository owners) {
         this.owners = owners;
     }
@@ -127,7 +129,8 @@ public class OwnerController {
     public String initFindForm(Owner owner, BindingResult result,Map<String, Object> model) {
 
     if(FeatureToggleManager.DO_REDIRECT_TO_VIEW_OWNERS_AFTER_CLICKING_FIND_OWNERS){
-        
+
+        ABTestingLogger.logNoObject("Redirect to view Owners " ,"b");
         // allow parameterless GET request for /owners to return all records
         if (owner.getLastName() == null) {
             owner.setLastName(""); // empty string signifies broadest possible search
@@ -141,9 +144,13 @@ public class OwnerController {
         Iterator<Owner> oldIterator = results.iterator();
 
         if (results.isEmpty()) {
+            if(SYSTEM_UNDER_TEST){
+                return "owners/ownersList";
+            }else{
             // no owners found
             result.rejectValue("lastName", "notFound", "not found");
             return "owners/findOwners";
+            }
         } else if (results.size() == 1) {
             // 1 owner found
             owner = results.iterator().next();
@@ -174,6 +181,8 @@ public class OwnerController {
    
         
     }else{
+        
+        ABTestingLogger.logNoObject("Redirect to view Owners " ,"a");
         model.put("owner", new Owner());
         model.put("DO_DISPLAY_LINK_TO_OWNER_LIST", FeatureToggleManager.DO_DISPLAY_LINK_TO_OWNER_LIST);
         return "owners/findOwners";
