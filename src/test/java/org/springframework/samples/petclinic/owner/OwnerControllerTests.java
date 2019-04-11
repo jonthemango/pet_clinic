@@ -213,6 +213,19 @@ public class OwnerControllerTests {
 
         // Show that feature can be rolled back to experiment A
         this.experimentA();
+
+        // Want to show that you can do random experiments
+        for (int i=0; i<400; i++){
+            if (Math.random() < 0.5) {
+                // Use Feature A
+                FeatureToggleManager.DO_REDIRECT_TO_NEW_PET_PAGE_AFTER_OWNER_CREATION = false;
+                experimentA();
+            }
+            else {
+                FeatureToggleManager.DO_REDIRECT_TO_NEW_PET_PAGE_AFTER_OWNER_CREATION = true;
+                experimentB();
+            }
+        }
     }
 
     public void experimentA() throws Exception{
