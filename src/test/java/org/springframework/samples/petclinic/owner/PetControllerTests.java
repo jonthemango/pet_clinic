@@ -158,6 +158,20 @@ public class PetControllerTests {
 
         // Show that feature can be rolled back to experiment A
         this.experimentA();
+
+        for (int i = 0; i < 500; i++) {
+            if (Math.random() < 0.5) {
+                // Use Feature A
+                FeatureToggleManager.DO_REDIRECT_TO_NEW_VISIT_PAGE_AFTER_PET_CREATION = false;
+                experimentA();
+            } else {
+                FeatureToggleManager.DO_REDIRECT_TO_NEW_VISIT_PAGE_AFTER_PET_CREATION = true;
+                experimentB();
+            }
+        }
+
+
+
     }
 
 
