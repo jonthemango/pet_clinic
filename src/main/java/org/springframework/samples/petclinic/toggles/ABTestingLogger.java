@@ -58,7 +58,7 @@ public class ABTestingLogger {
         }
 
         // Print it
-        System.out.println(obj.toString());
+        // System.out.println(obj.toString());
 
         // Save it
         SqlDB db = new SQLiteDB(dbName);
