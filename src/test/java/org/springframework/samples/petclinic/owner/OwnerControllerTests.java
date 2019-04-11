@@ -45,7 +45,7 @@ public class OwnerControllerTests {
     @Before
     public void setup() {
         FeatureToggleManager.DO_REDIRECT_TO_NEW_PET_PAGE_AFTER_OWNER_CREATION = false;
-        FeatureToggleManager.DO_ENABLE_FIRST_NAME_SEARCH = false;
+        FeatureToggleManager.DO_ENABLE_FIRST_NAME_SEARCH = true;
         
         george = new Owner();
         george.setId(TEST_OWNER_ID);
@@ -210,6 +210,7 @@ public class OwnerControllerTests {
 
     @Test
     public void testExpAFirstNameSearchToggle() throws Exception {
+        FeatureToggleManager.DO_ENABLE_FIRST_NAME_SEARCH = false;
         //DO_ENABLE_FIRST_NAME_SEARCH toggle is set to false
         given(this.owners.findByFirstName(george.getFirstName())).willReturn(Lists.newArrayList(george));
         mockMvc.perform(get("/owners2")
