@@ -45,6 +45,7 @@ public class OwnerControllerTests {
     @Before
     public void setup() {
         FeatureToggleManager.DO_REDIRECT_TO_NEW_PET_PAGE_AFTER_OWNER_CREATION = false;
+        FeatureToggleManager.DO_ENABLE_FIRST_NAME_SEARCH = false;
         
         george = new Owner();
         george.setId(TEST_OWNER_ID);
@@ -190,7 +191,33 @@ public class OwnerControllerTests {
             .andExpect(view().name("owners/ownerDetails"));
     }
 
-    
+    @Test
+    public void testDO_ENABLE_FIRST_NAME_SEARCHToggle() throws Exception{
+        for (int i=0; i<400; i++){
+            if (Math.random() < 0.5) {
+                ABTestingLogger.logNoObject("Search by first name experiment A starts" ,"a");
+                FeatureToggleManager.DO_ENABLE_FIRST_NAME_SEARCH = false;
+                testExpAFirstNameSearchToggle();
+            }
+            else {
+                ABTestingLogger.logNoObject("Search by first name experiment B starts" ,"b");
+                FeatureToggleManager.DO_ENABLE_FIRST_NAME_SEARCH = true;
+                //usage of existing test for this feature
+                testProcessFindFormByFirstName();
+            }
+        }
+    }
+
+    @Test
+    public void testExpAFirstNameSearchToggle() throws Exception {
+        //DO_ENABLE_FIRST_NAME_SEARCH toggle is set to false
+        given(this.owners.findByFirstName(george.getFirstName())).willReturn(Lists.newArrayList(george));
+        mockMvc.perform(get("/owners2")
+            .param("firstName", "George")
+        )
+            .andExpect(view().name("/error"));
+    }
+
     @Test
     public void DO_REDIRECT_TO_NEW_PET_PAGE_AFTER_OWNER_CREATION() throws Exception {
         // Reset logs

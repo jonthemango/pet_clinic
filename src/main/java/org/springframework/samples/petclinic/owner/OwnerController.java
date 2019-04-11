@@ -131,6 +131,8 @@ public class OwnerController {
     if(FeatureToggleManager.DO_REDIRECT_TO_VIEW_OWNERS_AFTER_CLICKING_FIND_OWNERS && FeatureToggleManager.DO_ENABLE_FIRST_NAME_SEARCH){
 
         ABTestingLogger.logNoObject("Redirect to view Owners " ,"b");
+        ABTestingLogger.logNoObject("Search by first name enable" ,"b");
+
         // allow parameterless GET request for /owners to return all records
         if (owner.getLastName() == null) {
             owner.setLastName(""); // empty string signifies broadest possible search
@@ -183,6 +185,7 @@ public class OwnerController {
     }else{
         
         ABTestingLogger.logNoObject("Redirect to view Owners " ,"a");
+        ABTestingLogger.logNoObject("Search by first name enable" ,"a");
         model.put("owner", new Owner());
         model.put("DO_DISPLAY_LINK_TO_OWNER_LIST", FeatureToggleManager.DO_DISPLAY_LINK_TO_OWNER_LIST);
         model.put("DO_ENABLE_FIRST_NAME_SEARCH", FeatureToggleManager.DO_ENABLE_FIRST_NAME_SEARCH);
@@ -250,47 +253,52 @@ public class OwnerController {
 
     @GetMapping("/owners2")
     public String processFindFormFN(Owner owner, BindingResult result, Map<String, Object> model) {
-        //if no first name is specified, will return all owners
-        if (owner.getFirstName() == null) {
-            owner.setFirstName("");
-        }
-        //retrieve owners from both database with the specified first name
-        Collection<Owner> results = this.owners.findByFirstName(owner.getFirstName());
-        db = new SQLiteDB();
-        tdg = new TableDataGateway(db);
-        ResultSet resultSet = this.tdg.getOwnersByFirstName(owner.getFirstName());
-        Iterator<Owner> oldIterator = results.iterator();
 
-        if (results.isEmpty()) {
-            // no owners found
-            result.rejectValue("firstName", "notFound", "not found");
-            return "owners/findOwners";
-        } else if (results.size() == 1) {
-            // 1 owner found
-            owner = results.iterator().next();
-            Integer expectedId = owner.getId();
-            try {
-                Integer actualId = resultSet.getInt("id");
-                if (!expectedId.equals(actualId)) {
-                    this.tdg.updateInconsistencies(actualId, "owners", "id", expectedId);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+        if(FeatureToggleManager.DO_ENABLE_FIRST_NAME_SEARCH){
+            //if no first name is specified, will return all owners
+            if (owner.getFirstName() == null) {
+                owner.setFirstName("");
             }
-            return "redirect:/owners/" + owner.getId();
-        } else {
-            // multiple owners found
-            model.put("selections", results);
-            try {
-                while (oldIterator.hasNext() && resultSet.next()) {
-                    if (!oldIterator.next().getId().equals(resultSet.getInt("id"))) {
-                        this.tdg.updateInconsistencies(resultSet.getInt("id"), "owners", "id", oldIterator.next().getId());
+            //retrieve owners from both database with the specified first name
+            Collection<Owner> results = this.owners.findByFirstName(owner.getFirstName());
+            db = new SQLiteDB();
+            tdg = new TableDataGateway(db);
+            ResultSet resultSet = this.tdg.getOwnersByFirstName(owner.getFirstName());
+            Iterator<Owner> oldIterator = results.iterator();
+
+            if (results.isEmpty()) {
+                // no owners found
+                result.rejectValue("firstName", "notFound", "not found");
+                return "owners/findOwners";
+            } else if (results.size() == 1) {
+                // 1 owner found
+                owner = results.iterator().next();
+                Integer expectedId = owner.getId();
+                try {
+                    Integer actualId = resultSet.getInt("id");
+                    if (!expectedId.equals(actualId)) {
+                        this.tdg.updateInconsistencies(actualId, "owners", "id", expectedId);
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+                return "redirect:/owners/" + owner.getId();
+            } else {
+                // multiple owners found
+                model.put("selections", results);
+                try {
+                    while (oldIterator.hasNext() && resultSet.next()) {
+                        if (!oldIterator.next().getId().equals(resultSet.getInt("id"))) {
+                            this.tdg.updateInconsistencies(resultSet.getInt("id"), "owners", "id", oldIterator.next().getId());
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return "owners/ownersList";
             }
-            return "owners/ownersList";
+        }else{
+            return "/error";
         }
 
     }
