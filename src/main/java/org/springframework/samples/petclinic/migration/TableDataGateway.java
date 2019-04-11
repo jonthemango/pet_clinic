@@ -143,6 +143,9 @@ public class TableDataGateway {
     public ResultSet getOwnersByLastName(String lastName){
         return db.select(String.format("SELECT * FROM owners WHERE last_name = '%s'", lastName));
     }
+    public ResultSet getOwnersByFirstName(String firstName){
+        return db.select(String.format("SELECT * FROM owners WHERE first_name = '%s'", firstName));
+    }
 
     public void updateInconsistencies(Integer id, String tableName, String column, String newValue){
         db.execute(String.format("UPDATE %s SET %s = '%s' WHERE id = %d", tableName, column, newValue, id));

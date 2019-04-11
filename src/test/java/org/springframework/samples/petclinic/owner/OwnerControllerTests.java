@@ -108,6 +108,16 @@ public class OwnerControllerTests {
     }
 
     @Test
+    public void testProcessFindFormByFirstName() throws Exception {
+        given(this.owners.findByFirstName(george.getFirstName())).willReturn(Lists.newArrayList(george));
+        mockMvc.perform(get("/owners2")
+            .param("firstName", "George")
+        )
+            .andExpect(status().is3xxRedirection())
+            .andExpect(view().name("redirect:/owners/" + TEST_OWNER_ID));
+    }
+
+    @Test
     public void testProcessFindFormByLastName() throws Exception {
         given(this.owners.findByLastName(george.getLastName())).willReturn(Lists.newArrayList(george));
         mockMvc.perform(get("/owners")

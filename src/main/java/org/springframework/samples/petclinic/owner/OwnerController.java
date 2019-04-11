@@ -247,6 +247,53 @@ public class OwnerController {
 
     }
 
+    @GetMapping("/owners2")
+    public String processFindFormFN(Owner owner, BindingResult result, Map<String, Object> model) {
+        //if no first name is specified, will return all owners
+        if (owner.getFirstName() == null) {
+            owner.setFirstName("");
+        }
+        //retrieve owners from both database with the specified first name
+        Collection<Owner> results = this.owners.findByFirstName(owner.getFirstName());
+        db = new SQLiteDB();
+        tdg = new TableDataGateway(db);
+        ResultSet resultSet = this.tdg.getOwnersByFirstName(owner.getFirstName());
+        Iterator<Owner> oldIterator = results.iterator();
+
+        if (results.isEmpty()) {
+            // no owners found
+            result.rejectValue("firstName", "notFound", "not found");
+            return "owners/findOwners";
+        } else if (results.size() == 1) {
+            // 1 owner found
+            owner = results.iterator().next();
+            Integer expectedId = owner.getId();
+            try {
+                Integer actualId = resultSet.getInt("id");
+                if (!expectedId.equals(actualId)) {
+                    this.tdg.updateInconsistencies(actualId, "owners", "id", expectedId);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return "redirect:/owners/" + owner.getId();
+        } else {
+            // multiple owners found
+            model.put("selections", results);
+            try {
+                while (oldIterator.hasNext() && resultSet.next()) {
+                    if (!oldIterator.next().getId().equals(resultSet.getInt("id"))) {
+                        this.tdg.updateInconsistencies(resultSet.getInt("id"), "owners", "id", oldIterator.next().getId());
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return "owners/ownersList";
+        }
+
+    }
+
     @GetMapping("/owners/{ownerId}/edit")
     public String initUpdateOwnerForm(@PathVariable("ownerId") int ownerId, Model model) {
         Owner owner = this.owners.findById(ownerId); // find owner to update
