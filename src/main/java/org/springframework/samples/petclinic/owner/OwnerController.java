@@ -128,7 +128,7 @@ public class OwnerController {
     @GetMapping("/owners/find")
     public String initFindForm(Owner owner, BindingResult result,Map<String, Object> model) {
 
-    if(FeatureToggleManager.DO_REDIRECT_TO_VIEW_OWNERS_AFTER_CLICKING_FIND_OWNERS){
+    if(FeatureToggleManager.DO_REDIRECT_TO_VIEW_OWNERS_AFTER_CLICKING_FIND_OWNERS && FeatureToggleManager.DO_ENABLE_FIRST_NAME_SEARCH){
 
         ABTestingLogger.logNoObject("Redirect to view Owners " ,"b");
         // allow parameterless GET request for /owners to return all records
@@ -185,6 +185,7 @@ public class OwnerController {
         ABTestingLogger.logNoObject("Redirect to view Owners " ,"a");
         model.put("owner", new Owner());
         model.put("DO_DISPLAY_LINK_TO_OWNER_LIST", FeatureToggleManager.DO_DISPLAY_LINK_TO_OWNER_LIST);
+        model.put("DO_ENABLE_FIRST_NAME_SEARCH", FeatureToggleManager.DO_ENABLE_FIRST_NAME_SEARCH);
         return "owners/findOwners";
     }
     

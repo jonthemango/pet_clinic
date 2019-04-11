@@ -20,6 +20,7 @@ public class FeatureToggleManager {
 
 	// Owner Toggles
     public static boolean DO_DISPLAY_LINK_TO_OWNER_LIST = true;
+    public static boolean DO_ENABLE_FIRST_NAME_SEARCH = false;
 
 
     // should not appear in toggle list
