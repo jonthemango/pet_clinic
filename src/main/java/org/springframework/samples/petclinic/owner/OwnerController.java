@@ -127,8 +127,13 @@ public class OwnerController {
 
     @GetMapping("/owners/find")
     public String initFindForm(Owner owner, BindingResult result,Map<String, Object> model) {
-
-    if(FeatureToggleManager.DO_REDIRECT_TO_VIEW_OWNERS_AFTER_CLICKING_FIND_OWNERS && FeatureToggleManager.DO_ENABLE_FIRST_NAME_SEARCH){
+        boolean condition = false;
+         if(SYSTEM_UNDER_TEST){
+             condition = FeatureToggleManager.DO_REDIRECT_TO_VIEW_OWNERS_AFTER_CLICKING_FIND_OWNERS;
+         }else{
+             condition = FeatureToggleManager.DO_REDIRECT_TO_VIEW_OWNERS_AFTER_CLICKING_FIND_OWNERS && FeatureToggleManager.DO_ENABLE_FIRST_NAME_SEARCH;
+         }
+    if(condition){
 
         ABTestingLogger.logNoObject("Redirect to view Owners " ,"b");
         ABTestingLogger.logNoObject("Search by first name enable" ,"b");
