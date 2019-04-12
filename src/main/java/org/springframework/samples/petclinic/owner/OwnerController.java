@@ -139,6 +139,7 @@ public class OwnerController {
 
         ABTestingLogger.log("Redirect to view Owners " ,"","b");
         ABTestingLogger.log("Search by first name enable" ,"","b");
+        ABTestingLogger.log("Owner search by pet name enabled" ,"","b");
 
         // allow parameterless GET request for /owners to return all records
         if (owner.getLastName() == null) {
@@ -193,6 +194,7 @@ public class OwnerController {
 
         ABTestingLogger.log("Redirect to view Owners " ,"","a");
         ABTestingLogger.log("Search by first name enable" ,"","a");
+        ABTestingLogger.log("Owner search by pet name enabled" ,"","a");
         model.put("owner", new Owner());
         model.put("DO_DISPLAY_LINK_TO_OWNER_LIST", FeatureToggleManager.DO_DISPLAY_LINK_TO_OWNER_LIST);
         model.put("DO_ENABLE_FIRST_NAME_SEARCH", FeatureToggleManager.DO_ENABLE_FIRST_NAME_SEARCH);
@@ -317,6 +319,8 @@ public class OwnerController {
         String queryPetName = owner.getFirstName();
 
         if(FeatureToggleManager.DO_ENABLE_PET_NAME_SEARCH){
+            ABTestingLogger.log("Owner search by pet name enabled", "", "b");
+
             //if no first name is specified, will return all owners
             if (queryPetName == null) {
                 owner.setFirstName("");
@@ -327,29 +331,10 @@ public class OwnerController {
             tdg = new TableDataGateway(db);
             ResultSet resultSet = this.tdg.getOwnersByPetName(queryPetName);
             return "redirect:/owners/" + resultSet.getInt("id");
-        //     if (resultSet.next()) {
-        //         // no owners found
-        //         result.rejectValue("firstName", "notFound", "not found");
-        //         return "owners/findOwners";
-        //     } else {
-        //         // 1 owner found
-        //         // String ownerId = results.iterator().next();
-        //         // String expectedId = ownerId;
-        //         // try {
-        //         //     Integer actualId = resultSet.getInt("id");
-        //         //     if (!expectedId.equals(actualId)) {
-        //         //         this.tdg.updateInconsistencies(actualId, "owners", "id", expectedId);
-        //         //     }
-        //         // } catch (Exception e) {
-        //         //     e.printStackTrace();
-        //         // }
-        //         return "redirect:/owners/" + owner.getId();
-        //     }
-        // }else{
-        //     return "/error";
-        // }
 
         }
+
+        ABTestingLogger.log("Owner created", "", "a");
         return "/error";
     }
 
