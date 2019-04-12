@@ -16,7 +16,7 @@
 package org.springframework.samples.petclinic.owner;
 
 import java.util.List;
-
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,5 +54,13 @@ public interface PetRepository extends Repository<Pet, Integer> {
      */
     void save(Pet pet);
 
+    // /**
+    //  * Retrieve an {@link Owner} from the data store by id.
+    //  * @param id the id to search for
+    //  * @return the {@link Owner} if found
+    //  */
+    // @Query("SELECT owner_id FROM pets WHERE name LIKE :name%")
+    // @Transactional(readOnly = true)
+    // List<Integer> findByName(@Param("name") Integer name);
 }
 

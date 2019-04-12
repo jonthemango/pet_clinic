@@ -194,6 +194,7 @@ public class OwnerController {
         model.put("owner", new Owner());
         model.put("DO_DISPLAY_LINK_TO_OWNER_LIST", FeatureToggleManager.DO_DISPLAY_LINK_TO_OWNER_LIST);
         model.put("DO_ENABLE_FIRST_NAME_SEARCH", FeatureToggleManager.DO_ENABLE_FIRST_NAME_SEARCH);
+        model.put("DO_ENABLE_PET_NAME_SEARCH", FeatureToggleManager.DO_ENABLE_PET_NAME_SEARCH);
         return "owners/findOwners";
     }
     
