@@ -49,8 +49,7 @@ public class Driver {
                 response += String.format("{ 'name': '%s', 'number_of_rows': %s } \n", name, rows);
             }
         } catch (Exception e){
-            e.printStackTrace();
-
+            //e.printStackTrace();
         } finally {
             db.close();
         }

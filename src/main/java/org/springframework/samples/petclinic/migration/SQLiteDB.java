@@ -15,7 +15,7 @@ public class SQLiteDB  implements SqlDB {
             Class.forName("org.sqlite.JDBC");
             this.conn = DriverManager.getConnection("jdbc:sqlite:migration.db");
         } catch (Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 
@@ -24,7 +24,7 @@ public class SQLiteDB  implements SqlDB {
             Class.forName("org.sqlite.JDBC");
             this.conn = DriverManager.getConnection("jdbc:sqlite:" + dbLocation);
         } catch (Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 
@@ -37,7 +37,7 @@ public class SQLiteDB  implements SqlDB {
             boolean inserted = statement.execute("INSERT INTO types (name) VALUES ('skander')");
             return inserted;
         } catch (SQLException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return false;
     }
@@ -48,10 +48,10 @@ public class SQLiteDB  implements SqlDB {
     public void execute(String sql){
         try{
             this.statement = conn.createStatement();
-            System.out.println(sql);
+            //System.out.println(sql);
             statement.execute(sql);
         } catch (Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 
@@ -64,7 +64,7 @@ public class SQLiteDB  implements SqlDB {
             ResultSet resultSet = statement.executeQuery(sql);
             return resultSet;
         } catch (Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return null;
     }
@@ -76,7 +76,7 @@ public class SQLiteDB  implements SqlDB {
                 this.conn.close();
                 this.conn = null;
             } catch (SQLException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
     }

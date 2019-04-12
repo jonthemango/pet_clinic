@@ -41,7 +41,7 @@ class MigrationController {
         try {
             toggles = FeatureToggleManager.getToggles();
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
 
 
@@ -57,9 +57,9 @@ class MigrationController {
         try {
             didWork = FeatureToggleManager.toggleByName(toggleName);
         } catch (NoSuchFieldException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return "redirect:/toggles;";
     }
