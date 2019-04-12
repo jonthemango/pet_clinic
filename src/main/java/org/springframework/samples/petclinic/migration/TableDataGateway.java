@@ -36,7 +36,7 @@ public class TableDataGateway {
             map.put("valueOfId", String.valueOf(entity.getId()) + ",");
         }
 
-        return map; 
+        return map;
     }
 
     public void insertOwner(Owner owner) {
@@ -58,18 +58,18 @@ public class TableDataGateway {
         sql = String.format("INSERT INTO pets (%s name, birth_date, type_id, owner_id) VALUES (%s '%s','%s',%d,%d)",
         map.get("hasId"), map.get("valueOfId"),
         pet.getName(), pet.getBirthDate().toString(), pet.getType().getId(), pet.getOwner().getId());
-        
+
         db.execute(sql);
     }
 
     public void insertSpecialty(Specialty specialty) {
         String sql;
         HashMap<String,String> map = id(specialty);
-        
-        sql= String.format("INSERT INTO specialties (%s name) VALUES (%s '%s')", 
-                map.get("hasId"), map.get("valueOfId"), 
+
+        sql= String.format("INSERT INTO specialties (%s name) VALUES (%s '%s')",
+                map.get("hasId"), map.get("valueOfId"),
                 specialty.getName());
-        
+
         db.execute(sql);
     }
 
@@ -88,7 +88,7 @@ public class TableDataGateway {
         String sql;
         sql = String.format("SELECT * FROM types WHERE id = %d", id);
         String result = db.select(sql).getString("name");
-        
+
         return result;
     }
 
@@ -98,15 +98,15 @@ public class TableDataGateway {
         sql = String.format("INSERT INTO vet_specialties (vet_id, specialty_id) VALUES (%d, %d)",
 
         vet.getId(), specialty.getId());
-        
+
         db.execute(sql);
     }
 
     public void insertVet(Vet vet) {
         String sql;
         HashMap<String, String> map = id(vet);
-        
-        sql = String.format("INSERT INTO vets (%s first_name, last_name) VALUES (%s '%s', '%s')", 
+
+        sql = String.format("INSERT INTO vets (%s first_name, last_name) VALUES (%s '%s', '%s')",
         map.get("hasId"), map.get("valueOfId"),
         vet.getFirstName(), vet.getLastName());
         db.execute(sql);
@@ -120,7 +120,7 @@ public class TableDataGateway {
     public void insertVisit(Visit visit) {
         String sql;
         HashMap<String,String> map = id(visit);
-        
+
         sql = String.format("INSERT INTO visits (%s pet_id, visit_date, description) VALUES (%s %d, '%s', '%s')",
              map.get("hasId"), map.get("valueOfId"),
              visit.getPetId(), visit.getDate().toString(), visit.getDescription());
@@ -130,19 +130,27 @@ public class TableDataGateway {
 
 
     public ResultSet getById(Integer id, String tableName) {
-        String sql; 
+        String sql;
         sql = String.format("SELECT * FROM %s WHERE id = %d", tableName, id);
         ResultSet resultSet = db.select(sql);
         return resultSet;
     }
 
-    public void deleteById(Integer id, String tableName){        
+    public void deleteById(Integer id, String tableName){
         db.execute(String.format("DELETE FROM %s WHERE id = %d", tableName, id));
     }
 
     public ResultSet getOwnersByLastName(String lastName){
         return db.select(String.format("SELECT * FROM owners WHERE last_name = '%s'", lastName));
     }
+
+    public ResultSet getOwnersByPetName(String name) throws Exception{
+        ResultSet rs = db.select(String.format("SELECT * FROM pets WHERE name = '%s';", name));
+        String owner_id = rs.getString("owner_id");
+        ResultSet rs2 = db.select(String.format("SELECT * FROM owners WHERE id = '%s'", owner_id ));
+        return rs2;
+    }
+
     public ResultSet getOwnersByFirstName(String firstName){
         return db.select(String.format("SELECT * FROM owners WHERE first_name = '%s'", firstName));
     }

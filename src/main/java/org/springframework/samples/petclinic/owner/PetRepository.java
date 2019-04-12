@@ -20,6 +20,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.Collection;
 
 /**
  * Repository class for <code>Pet</code> domain objects All method names are compliant with Spring Data naming
@@ -54,13 +55,13 @@ public interface PetRepository extends Repository<Pet, Integer> {
      */
     void save(Pet pet);
 
-    // /**
-    //  * Retrieve an {@link Owner} from the data store by id.
-    //  * @param id the id to search for
-    //  * @return the {@link Owner} if found
-    //  */
-    // @Query("SELECT owner_id FROM pets WHERE name LIKE :name%")
+    /**
+     * Retrieve an {@link Pet} from the data store by id.
+     * @param name the name of the pet to search for
+     * @return the collection of found owner_id if found
+     */
+    // @Query("SELECT pet.owner_id FROM Pet WHERE name LIKE :name%")
     // @Transactional(readOnly = true)
-    // List<Integer> findByName(@Param("name") Integer name);
+    // Collection<Pet> findByName(@Param("name") String name);
 }
 

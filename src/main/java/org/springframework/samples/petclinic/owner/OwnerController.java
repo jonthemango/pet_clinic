@@ -60,11 +60,13 @@ public class OwnerController {
 
     private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
     private final OwnerRepository owners;
+    private final PetRepository pets;
 
     public static boolean SYSTEM_UNDER_TEST = false;
 
-    public OwnerController(OwnerRepository owners) {
+    public OwnerController(OwnerRepository owners,PetRepository pets) {
         this.owners = owners;
+        this.pets = pets;
     }
 
     @InitBinder
@@ -92,17 +94,17 @@ public class OwnerController {
             return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
         } else {
             // insert owner into old db
-            this.owners.save(owner); 
+            this.owners.save(owner);
 
             // check if feature toggle is on
             if(FeatureToggleManager.DO_RUN_CONSISTENCY_CHECKER)
-            {            
+            {
 
-                if(!FeatureToggleManager.DOING_MIGRATION_TEST){      
+                if(!FeatureToggleManager.DOING_MIGRATION_TEST){
                 db = new SQLiteDB();
                 tdg = new TableDataGateway(db);
                 }
-                
+
                 // insert into new SQLite db
                 tdg.insertOwner(owner);
             }
@@ -185,10 +187,10 @@ public class OwnerController {
             }
             return "owners/ownersList";
         }
-   
-        
+
+
     }else{
-        
+
         ABTestingLogger.log("Redirect to view Owners " ,"","a");
         ABTestingLogger.log("Search by first name enable" ,"","a");
         model.put("owner", new Owner());
@@ -197,7 +199,7 @@ public class OwnerController {
         model.put("DO_ENABLE_PET_NAME_SEARCH", FeatureToggleManager.DO_ENABLE_PET_NAME_SEARCH);
         return "owners/findOwners";
     }
-    
+
     }
 
     @GetMapping("/owners/finds")
@@ -208,7 +210,7 @@ public class OwnerController {
     }
 
 
-    
+
     @GetMapping("/owners")
     public String processFindForm(Owner owner, BindingResult result, Map<String, Object> model) {
         // allow parameterless GET request for /owners to return all records
@@ -307,6 +309,48 @@ public class OwnerController {
             return "/error";
         }
 
+    }
+
+    @GetMapping("/owners3")
+    public String processFindFormP(Owner owner, BindingResult result, Map<String, Object> model) throws Exception {
+        System.out.println("owner");
+        String queryPetName = owner.getFirstName();
+
+        if(FeatureToggleManager.DO_ENABLE_PET_NAME_SEARCH){
+            //if no first name is specified, will return all owners
+            if (queryPetName == null) {
+                owner.setFirstName("");
+            }
+            //retrieve owners from both database with the specified first name
+            // Collection<Pet> results = this.pets.findByName(queryPetName);
+            db = new SQLiteDB();
+            tdg = new TableDataGateway(db);
+            ResultSet resultSet = this.tdg.getOwnersByPetName(queryPetName);
+            return "redirect:/owners/" + resultSet.getInt("id");
+        //     if (resultSet.next()) {
+        //         // no owners found
+        //         result.rejectValue("firstName", "notFound", "not found");
+        //         return "owners/findOwners";
+        //     } else {
+        //         // 1 owner found
+        //         // String ownerId = results.iterator().next();
+        //         // String expectedId = ownerId;
+        //         // try {
+        //         //     Integer actualId = resultSet.getInt("id");
+        //         //     if (!expectedId.equals(actualId)) {
+        //         //         this.tdg.updateInconsistencies(actualId, "owners", "id", expectedId);
+        //         //     }
+        //         // } catch (Exception e) {
+        //         //     e.printStackTrace();
+        //         // }
+        //         return "redirect:/owners/" + owner.getId();
+        //     }
+        // }else{
+        //     return "/error";
+        // }
+
+        }
+        return "/error";
     }
 
     @GetMapping("/owners/{ownerId}/edit")
