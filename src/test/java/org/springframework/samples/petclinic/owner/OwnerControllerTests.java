@@ -195,12 +195,12 @@ public class OwnerControllerTests {
     public void testDO_ENABLE_FIRST_NAME_SEARCHToggle() throws Exception{
         for (int i=0; i<400; i++){
             if (Math.random() < 0.5) {
-                ABTestingLogger.logNoObject("Search by first name experiment A starts" ,"a");
+                ABTestingLogger.log("Search by first name experiment A starts" ,"","a");
                 FeatureToggleManager.DO_ENABLE_FIRST_NAME_SEARCH = false;
                 testExpAFirstNameSearchToggle();
             }
             else {
-                ABTestingLogger.logNoObject("Search by first name experiment B starts" ,"b");
+                ABTestingLogger.log("Search by first name experiment B starts" ,"","b");
                 FeatureToggleManager.DO_ENABLE_FIRST_NAME_SEARCH = true;
                 //usage of existing test for this feature
                 testProcessFindFormByFirstName();
