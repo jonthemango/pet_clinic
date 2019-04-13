@@ -60,13 +60,11 @@ public class OwnerController {
 
     private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
     private final OwnerRepository owners;
-    private final PetRepository pets;
 
     public static boolean SYSTEM_UNDER_TEST = false;
 
-    public OwnerController(OwnerRepository owners,PetRepository pets) {
+    public OwnerController(OwnerRepository owners) {
         this.owners = owners;
-        this.pets = pets;
     }
 
     @InitBinder
@@ -129,16 +127,12 @@ public class OwnerController {
 
     @GetMapping("/owners/find")
     public String initFindForm(Owner owner, BindingResult result,Map<String, Object> model) {
-        boolean condition = false;
-         if(SYSTEM_UNDER_TEST){
-             condition = FeatureToggleManager.DO_REDIRECT_TO_VIEW_OWNERS_AFTER_CLICKING_FIND_OWNERS;
-         }else{
-             condition = FeatureToggleManager.DO_REDIRECT_TO_VIEW_OWNERS_AFTER_CLICKING_FIND_OWNERS && FeatureToggleManager.DO_ENABLE_FIRST_NAME_SEARCH;
+         if(SYSTEM_UNDER_TEST ){
+             FeatureToggleManager.DO_ENABLE_FIRST_NAME_SEARCH = false;
          }
-    if(condition){
+    if(FeatureToggleManager.DO_REDIRECT_TO_VIEW_OWNERS_AFTER_CLICKING_FIND_OWNERS){
 
         ABTestingLogger.log("Redirect to view Owners " ,"","b");
-        ABTestingLogger.log("Search by first name enable" ,"","b");
         ABTestingLogger.log("Owner search by pet name enabled" ,"","b");
 
         // allow parameterless GET request for /owners to return all records
@@ -193,7 +187,6 @@ public class OwnerController {
     }else{
 
         ABTestingLogger.log("Redirect to view Owners " ,"","a");
-        ABTestingLogger.log("Search by first name enable" ,"","a");
         ABTestingLogger.log("Owner search by pet name enabled" ,"","a");
         model.put("owner", new Owner());
         model.put("DO_DISPLAY_LINK_TO_OWNER_LIST", FeatureToggleManager.DO_DISPLAY_LINK_TO_OWNER_LIST);
@@ -265,6 +258,7 @@ public class OwnerController {
     public String processFindFormFN(Owner owner, BindingResult result, Map<String, Object> model) {
 
         if(FeatureToggleManager.DO_ENABLE_FIRST_NAME_SEARCH){
+            ABTestingLogger.log("Search by first name enable" ,"","b");
             //if no first name is specified, will return all owners
             if (owner.getFirstName() == null) {
                 owner.setFirstName("");
@@ -308,6 +302,7 @@ public class OwnerController {
                 return "owners/ownersList";
             }
         }else{
+            ABTestingLogger.log("Search by first name enable" ,"","a");
             return "/error";
         }
 
